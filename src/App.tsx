@@ -305,6 +305,7 @@ export default function App() {
 
   const handleOrderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    tg?.HapticFeedback.impactOccurred('medium');
     const formData = new FormData(e.target as HTMLFormElement);
     const orderData = {
       cake: selectedCake?.name,
@@ -652,7 +653,7 @@ export default function App() {
                     {SIZES.map(size => (
                       <button
                         key={size.id}
-                        onClick={() => { setSelectedSize(size); tg?.HapticFeedback.selectionChanged(); }}
+                        onClick={() => { setSelectedSize(size); tg?.HapticFeedback.impactOccurred('light'); }}
                         className={`p-3 rounded-2xl border transition-all text-center ${
                           selectedSize.id === size.id 
                           ? 'bg-[#F06292] text-white border-[#F06292] shadow-md' 
@@ -675,7 +676,7 @@ export default function App() {
                       return (
                         <button
                           key={filling.id}
-                          onClick={() => { setSelectedFilling(filling); tg?.HapticFeedback.selectionChanged(); }}
+                          onClick={() => { setSelectedFilling(filling); tg?.HapticFeedback.impactOccurred('light'); }}
                           className={`p-3 rounded-2xl border transition-all text-left flex justify-between items-center ${
                             selectedFilling.id === filling.id 
                             ? 'bg-[#F06292] text-white border-[#F06292] shadow-md' 
@@ -699,7 +700,7 @@ export default function App() {
                       return (
                         <button
                           key={biscuit.id}
-                          onClick={() => { setSelectedBiscuit(biscuit); tg?.HapticFeedback.selectionChanged(); }}
+                          onClick={() => { setSelectedBiscuit(biscuit); tg?.HapticFeedback.impactOccurred('light'); }}
                           className={`p-3 rounded-2xl border transition-all text-left flex justify-between items-center ${
                             selectedBiscuit.id === biscuit.id 
                             ? 'bg-[#F06292] text-white border-[#F06292] shadow-md' 
@@ -721,7 +722,7 @@ export default function App() {
                     {ADDONS.map(addon => (
                       <button
                         key={addon.id}
-                        onClick={() => { setSelectedAddon(addon); tg?.HapticFeedback.selectionChanged(); }}
+                        onClick={() => { setSelectedAddon(addon); tg?.HapticFeedback.impactOccurred('light'); }}
                         className={`p-3 rounded-2xl border transition-all text-left flex justify-between items-center ${
                           selectedAddon.id === addon.id 
                           ? 'bg-[#F06292] text-white border-[#F06292] shadow-md' 
