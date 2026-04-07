@@ -169,6 +169,7 @@ export default function App() {
   const [isAdminShopOpen, setIsAdminShopOpen] = useState(false);
   const [isOrderSuccessOpen, setIsOrderSuccessOpen] = useState(false);
   const [orderError, setOrderError] = useState<string | null>(null);
+  const [showMainHearts, setShowMainHearts] = useState(false);
 
   // Selection states
   const [selectedSize, setSelectedSize] = useState(SIZES[0]);
@@ -180,6 +181,9 @@ export default function App() {
 
   // Load data & Check Auth
   useEffect(() => {
+    setShowMainHearts(true);
+    const timer = setTimeout(() => setShowMainHearts(false), 3000);
+    
     const saved = localStorage.getItem('cakes_v5');
     if (saved) {
       let loadedCakes = JSON.parse(saved);
@@ -357,8 +361,36 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFF9F9] text-slate-900 font-sans selection:bg-rose-100 overflow-x-hidden">
+    <div className="min-h-screen bg-[#FFF9F9] text-slate-900 font-sans selection:bg-rose-100 overflow-x-hidden relative">
       
+      {/* Main Page Hearts Animation */}
+      <AnimatePresence>
+        {showMainHearts && (
+          <div className="fixed inset-0 pointer-events-none z-[100] overflow-hidden">
+            {[...Array(15)].map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ y: '110vh', x: Math.random() * 100 + 'vw', opacity: 0, scale: 0 }}
+                animate={{ 
+                  y: '-10vh', 
+                  opacity: [0, 1, 1, 0],
+                  scale: [0.5, 1.5, 1.2, 0.8],
+                  rotate: Math.random() * 360
+                }}
+                transition={{ 
+                  duration: 2 + Math.random() * 2, 
+                  ease: "easeOut",
+                  delay: Math.random() * 0.5
+                }}
+                className="absolute text-rose-300/60 text-2xl"
+              >
+                {i % 2 === 0 ? '❤️' : '🍰'}
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Admin Badge */}
       <AnimatePresence>
         {isAdmin && (
@@ -841,7 +873,7 @@ export default function App() {
 
               <div className="w-40 h-40 mx-auto mb-6 rounded-full overflow-hidden border-8 border-rose-50 shadow-xl relative z-10">
                 <img 
-                  src="https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=400&q=80" 
+                  src="https://images.unsplash.com/photo-1533733356397-8627e193aa4b?auto=format&fit=crop&w=400&q=80" 
                   alt="Super Cute Cat" 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
