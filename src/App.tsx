@@ -34,6 +34,32 @@ interface Cake {
   calories?: string;
 }
 
+const SIZES = [
+  { id: 'bento', name: 'Бенто', weight: '~500г', extra: 0 },
+  { id: 'midi', name: 'Миди', weight: '~1кг', extra: 25 },
+  { id: 'max', name: 'Макс', weight: '~2кг', extra: 55 },
+];
+
+const FILLINGS = [
+  { id: 'cherry', name: 'Вишня', extra: { bento: 0, midi: 0, max: 0 } },
+  { id: 'strawberry', name: 'Клубника', extra: { bento: 0, midi: 0, max: 0 } },
+  { id: 'raspberry', name: 'Малина', extra: { bento: 0, midi: 0, max: 0 } },
+  { id: 'salted_caramel', name: 'Соленая карамель', extra: { bento: 0, midi: 0, max: 0 } },
+  { id: 'condensed_banana', name: 'Сгущёнка банан', extra: { bento: 0, midi: 0, max: 0 } },
+  { id: 'caramel_banana', name: 'Карамель банан', extra: { bento: 0, midi: 0, max: 0 } },
+  { id: 'nutella_banana', name: 'Нутелла банан', extra: { bento: 5, midi: 8, max: 15 } },
+];
+
+const BISCUITS = [
+  { id: 'classic', name: 'Классический', extra: { bento: 0, midi: 0, max: 0 } },
+  { id: 'chocolate', name: 'Шоколадный', extra: { bento: 2, midi: 3, max: 4 } },
+];
+
+const ADDONS = [
+  { id: 'none', name: 'Нет', extra: 0 },
+  { id: 'peanut', name: 'Арахис', extra: 3 },
+];
+
 // СПИСОК АДМИНОВ (ID или Username)
 const ADMIN_LIST: (string | number)[] = [
   "skolodko38", 
@@ -144,6 +170,12 @@ export default function App() {
   const [isOrderSuccessOpen, setIsOrderSuccessOpen] = useState(false);
   const [orderError, setOrderError] = useState<string | null>(null);
 
+  // Selection states
+  const [selectedSize, setSelectedSize] = useState(SIZES[0]);
+  const [selectedFilling, setSelectedFilling] = useState(FILLINGS[0]);
+  const [selectedBiscuit, setSelectedBiscuit] = useState(BISCUITS[0]);
+  const [selectedAddon, setSelectedAddon] = useState(ADDONS[0]);
+
   const tg = (window as any).Telegram?.WebApp;
 
   // Load data & Check Auth
@@ -185,6 +217,26 @@ export default function App() {
     });
     return result;
   }, [cakes, currentCategory, currentSort]);
+
+  const currentPrice = useMemo(() => {
+    if (!selectedCake) return 0;
+    let total = selectedCake.price;
+    
+    // Size extra
+    total += selectedSize.extra;
+    
+    // Filling extra based on size
+    const sizeId = selectedSize.id as keyof typeof selectedFilling.extra;
+    total += (selectedFilling.extra as any)[sizeId] || 0;
+    
+    // Biscuit extra based on size
+    total += (selectedBiscuit.extra as any)[sizeId] || 0;
+    
+    // Addon extra
+    total += selectedAddon.extra;
+    
+    return total;
+  }, [selectedCake, selectedSize, selectedFilling, selectedBiscuit, selectedAddon]);
 
   // Handlers
   const handleToggleAdmin = () => {
@@ -241,7 +293,11 @@ export default function App() {
     const formData = new FormData(e.target as HTMLFormElement);
     const orderData = {
       cake: selectedCake?.name,
-      price: selectedCake?.price,
+      price: currentPrice,
+      size: `${selectedSize.name} (${selectedSize.weight})`,
+      filling: selectedFilling.name,
+      biscuit: selectedBiscuit.name,
+      addon: selectedAddon.name,
       customer: formData.get('name'),
       phone: formData.get('phone'),
       date: formData.get('date'),
@@ -516,7 +572,7 @@ export default function App() {
             <motion.div 
               initial={{ y: 30 }}
               animate={{ y: 0 }}
-              className="relative -mt-12 bg-[#FFFDF7] rounded-t-[3.5rem] p-8 min-h-[55vh] shadow-[0_-15px_40px_rgba(0,0,0,0.08)]"
+              className="relative -mt-12 bg-[#FFFDF7] rounded-t-[3.5rem] p-8 min-h-[55vh] shadow-[0_-15px_40px_rgba(0,0,0,0.08)] pb-32"
             >
               <div className="flex justify-between items-start mb-6">
                 <div>
@@ -526,7 +582,7 @@ export default function App() {
                   <h2 className="font-serif text-3xl text-slate-800 leading-tight">{selectedCake.name}</h2>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-[#AD1457]">{selectedCake.price}</p>
+                  <p className="text-2xl font-bold text-[#AD1457]">{currentPrice}</p>
                   <p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest text-right">BYN</p>
                 </div>
               </div>
@@ -537,36 +593,108 @@ export default function App() {
                 </p>
               )}
 
-              <div className="grid grid-cols-2 gap-4 mb-10">
-                <div className="bg-white border border-pink-50 p-4 rounded-3xl flex items-center space-x-3">
-                  <div className="p-2 bg-pink-50 rounded-xl text-[#AD1457]">
-                    <Weight className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-[8px] font-bold text-slate-400 uppercase">Вес</p>
-                    <p className="text-xs font-bold">от 1.5 кг</p>
+              {/* Selection Options */}
+              <div className="space-y-8 mb-10">
+                {/* Size Selection */}
+                <div>
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Размер и вес</h3>
+                  <div className="grid grid-cols-3 gap-2">
+                    {SIZES.map(size => (
+                      <button
+                        key={size.id}
+                        onClick={() => { setSelectedSize(size); tg?.HapticFeedback.selectionChanged(); }}
+                        className={`p-3 rounded-2xl border transition-all text-center ${
+                          selectedSize.id === size.id 
+                          ? 'bg-[#AD1457] text-white border-[#AD1457] shadow-md' 
+                          : 'bg-white text-slate-600 border-pink-50'
+                        }`}
+                      >
+                        <p className="text-xs font-bold">{size.name}</p>
+                        <p className="text-[8px] opacity-70">{size.weight}</p>
+                      </button>
+                    ))}
                   </div>
                 </div>
-                {selectedCake.calories && (
-                  <div className="bg-white border border-pink-50 p-4 rounded-3xl flex items-center space-x-3">
-                    <div className="p-2 bg-pink-50 rounded-xl text-[#AD1457]">
-                      <Flame className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="text-[8px] font-bold text-slate-400 uppercase">Энергия</p>
-                      <p className="text-xs font-bold">{selectedCake.calories}</p>
-                    </div>
+
+                {/* Filling Selection */}
+                <div>
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Начинка</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {FILLINGS.map(filling => {
+                      const extra = (filling.extra as any)[selectedSize.id] || 0;
+                      return (
+                        <button
+                          key={filling.id}
+                          onClick={() => { setSelectedFilling(filling); tg?.HapticFeedback.selectionChanged(); }}
+                          className={`p-3 rounded-2xl border transition-all text-left flex justify-between items-center ${
+                            selectedFilling.id === filling.id 
+                            ? 'bg-[#AD1457] text-white border-[#AD1457] shadow-md' 
+                            : 'bg-white text-slate-600 border-pink-50'
+                          }`}
+                        >
+                          <span className="text-[10px] font-bold">{filling.name}</span>
+                          {extra > 0 && <span className="text-[8px] opacity-80">+{extra}р</span>}
+                        </button>
+                      );
+                    })}
                   </div>
-                )}
+                </div>
+
+                {/* Biscuit Selection */}
+                <div>
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Бисквит</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {BISCUITS.map(biscuit => {
+                      const extra = (biscuit.extra as any)[selectedSize.id] || 0;
+                      return (
+                        <button
+                          key={biscuit.id}
+                          onClick={() => { setSelectedBiscuit(biscuit); tg?.HapticFeedback.selectionChanged(); }}
+                          className={`p-3 rounded-2xl border transition-all text-left flex justify-between items-center ${
+                            selectedBiscuit.id === biscuit.id 
+                            ? 'bg-[#AD1457] text-white border-[#AD1457] shadow-md' 
+                            : 'bg-white text-slate-600 border-pink-50'
+                          }`}
+                        >
+                          <span className="text-[10px] font-bold">{biscuit.name}</span>
+                          {extra > 0 && <span className="text-[8px] opacity-80">+{extra}р</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Addons Selection */}
+                <div>
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Добавки</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {ADDONS.map(addon => (
+                      <button
+                        key={addon.id}
+                        onClick={() => { setSelectedAddon(addon); tg?.HapticFeedback.selectionChanged(); }}
+                        className={`p-3 rounded-2xl border transition-all text-left flex justify-between items-center ${
+                          selectedAddon.id === addon.id 
+                          ? 'bg-[#AD1457] text-white border-[#AD1457] shadow-md' 
+                          : 'bg-white text-slate-600 border-pink-50'
+                        }`}
+                      >
+                        <span className="text-[10px] font-bold">{addon.name}</span>
+                        {addon.extra > 0 && <span className="text-[8px] opacity-80">+{addon.extra}р</span>}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
-              <button 
-                onClick={() => { setIsOrderFormOpen(true); tg?.HapticFeedback.impactOccurred('light'); }}
-                className="w-full py-4.5 bg-[#AD1457] text-white rounded-2xl font-bold text-base shadow-xl shadow-pink-100 active:scale-95 transition-transform flex items-center justify-center space-x-2"
-              >
-                <ShoppingBag className="w-5 h-5" />
-                <span>Заказать</span>
-              </button>
+              <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[#FFFDF7] via-[#FFFDF7] to-transparent z-[130]">
+                <button 
+                  onClick={() => { setIsOrderFormOpen(true); tg?.HapticFeedback.impactOccurred('light'); }}
+                  className="w-full py-4.5 bg-[#AD1457] text-white rounded-2xl font-bold text-base shadow-xl shadow-pink-100 active:scale-95 transition-transform flex items-center justify-center space-x-2"
+                >
+                  <ShoppingBag className="w-5 h-5" />
+                  <span>Заказать за {currentPrice} BYN</span>
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}

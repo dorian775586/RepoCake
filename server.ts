@@ -36,6 +36,10 @@ async function startServer() {
 🎂 *НОВЫЙ ЗАКАЗ!*
 --------------------------
 🍰 *Торт:* ${data.cake || 'Не выбран'}
+⚖️ *Размер:* ${data.size || '-'}
+🍓 *Начинка:* ${data.filling || '-'}
+🍞 *Бисквит:* ${data.biscuit || '-'}
+🥜 *Добавки:* ${data.addon || '-'}
 💰 *Цена:* ${data.price || 0} BYN
 👤 *Клиент:* ${data.customer || data.name || 'Не указан'}
 📞 *Телефон:* ${data.phone || 'Не указан'}
