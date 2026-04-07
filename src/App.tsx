@@ -142,6 +142,7 @@ export default function App() {
   const [editingCake, setEditingCake] = useState<Partial<Cake> | null>(null);
   const [isAdminShopOpen, setIsAdminShopOpen] = useState(false);
   const [isOrderSuccessOpen, setIsOrderSuccessOpen] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
 
   const tg = (window as any).Telegram?.WebApp;
 
@@ -263,7 +264,7 @@ export default function App() {
         headers: { 
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ orderData })
+        body: JSON.stringify(orderData)
       });
 
       if (res.ok) {
@@ -279,10 +280,9 @@ export default function App() {
       }
     } catch (err: any) {
       console.error("Order error:", err);
+      setOrderError(err.message || "Не удалось отправить заказ. Проверьте настройки бота.");
       if (tg) {
-        tg.showAlert(`Ошибка: ${err.message || "Не удалось отправить заказ. Проверьте настройки бота."}`);
-      } else {
-        alert("Ошибка отправки заказа.");
+        tg.HapticFeedback.notificationOccurred('error');
       }
     } finally {
       if (tg) tg.MainButton.hideProgress();
@@ -608,7 +608,7 @@ export default function App() {
                   <p className="text-slate-600">Улица Сладкая, 15</p>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-4">
                 <div className="space-y-1">
                   <label className="text-[9px] font-bold text-slate-400 uppercase ml-3">Дата</label>
                   <input name="date" type="date" required className="w-full p-4 rounded-2xl border border-pink-100 focus:outline-none focus:ring-1 focus:ring-[#AD1457] bg-white shadow-sm text-sm" />
@@ -653,6 +653,7 @@ export default function App() {
                   src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=300&q=80" 
                   alt="Cute Cat" 
                   className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
                 />
               </div>
               <h2 className="font-serif text-3xl text-[#AD1457] mb-4">Мяу! Заказ принят!</h2>
@@ -664,6 +665,38 @@ export default function App() {
                 className="w-full py-4 bg-[#AD1457] text-white rounded-2xl font-bold shadow-lg shadow-pink-100 active:scale-95 transition-transform"
               >
                 Отлично!
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Order Error Modal */}
+      <AnimatePresence>
+        {orderError && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[250] flex items-center justify-center p-6 text-center"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              className="bg-white p-8 rounded-[2.5rem] shadow-2xl border border-red-50 max-w-sm w-full"
+            >
+              <div className="w-20 h-20 mx-auto mb-4 bg-red-50 rounded-full flex items-center justify-center text-red-500">
+                <X className="w-10 h-10" />
+              </div>
+              <h2 className="font-serif text-2xl text-slate-800 mb-2">Ой, ошибка!</h2>
+              <p className="text-slate-500 mb-6 text-sm leading-relaxed">
+                {orderError}
+              </p>
+              <button 
+                onClick={() => setOrderError(null)}
+                className="w-full py-3.5 bg-slate-800 text-white rounded-xl font-bold active:scale-95 transition-transform"
+              >
+                Понятно
               </button>
             </motion.div>
           </motion.div>
