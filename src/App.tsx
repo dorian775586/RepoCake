@@ -357,7 +357,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFFDF7] text-slate-900 font-sans selection:bg-brand-berry/10 overflow-x-hidden">
+    <div className="min-h-screen bg-[#FFF9F9] text-slate-900 font-sans selection:bg-rose-100 overflow-x-hidden">
       
       {/* Admin Badge */}
       <AnimatePresence>
@@ -379,7 +379,7 @@ export default function App() {
           <div className="absolute top-4 left-5 flex space-x-2">
             <button 
               onClick={handleToggleAdmin}
-              className="bg-white/80 backdrop-blur-md p-2.5 rounded-xl text-[#AD1457] shadow-sm border border-pink-50 active:scale-90 transition-transform"
+              className="bg-white/80 backdrop-blur-md p-2.5 rounded-xl text-[#F06292] shadow-sm border border-rose-50 active:scale-90 transition-transform"
             >
               <Instagram className="w-5 h-5" />
             </button>
@@ -388,11 +388,11 @@ export default function App() {
           <motion.h1 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="font-serif text-4xl text-[#AD1457] leading-tight mt-12"
+            className="font-serif text-4xl text-[#D81B60] leading-tight mt-12"
           >
             Шедевры<br/><span className="text-slate-800 text-3xl">ручной работы</span>
           </motion.h1>
-          <div className="w-10 h-1 bg-[#AD1457] mx-auto mt-4 rounded-full opacity-20" />
+          <div className="w-10 h-1 bg-[#F06292] mx-auto mt-4 rounded-full opacity-20" />
         </header>
 
         {/* Categories */}
@@ -403,8 +403,8 @@ export default function App() {
               onClick={() => { setCurrentCategory(id); tg?.HapticFeedback.selectionChanged(); }}
               className={`px-5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
                 currentCategory === id 
-                ? 'bg-[#AD1457] text-white border-[#AD1457] shadow-md shadow-pink-100' 
-                : 'bg-white text-slate-400 border-pink-50'
+                ? 'bg-[#F06292] text-white border-[#F06292] shadow-md shadow-rose-100' 
+                : 'bg-white text-slate-400 border-rose-50'
               }`}
             >
               {name}
@@ -418,7 +418,7 @@ export default function App() {
           <select 
             value={currentSort}
             onChange={(e) => { setCurrentSort(e.target.value); tg?.HapticFeedback.selectionChanged(); }}
-            className="text-[10px] font-bold text-[#AD1457] bg-transparent outline-none uppercase tracking-wider"
+            className="text-[10px] font-bold text-[#F06292] bg-transparent outline-none uppercase tracking-wider"
           >
             <option value="popularity">Популярные</option>
             <option value="price-asc">Дешевле</option>
@@ -463,7 +463,7 @@ export default function App() {
               
               <div className="p-3 flex flex-col justify-between flex-grow">
                 <div className="mb-2">
-                  <p className="text-lg font-bold text-[#AD1457]">
+                  <p className="text-lg font-bold text-[#F06292]">
                     {cake.price} <span className="text-[9px] font-normal text-slate-400 uppercase tracking-tighter">BYN</span>
                   </p>
                 </div>
@@ -478,7 +478,7 @@ export default function App() {
                   )}
                   <button 
                     onClick={() => setSelectedCake(cake)}
-                    className="flex-1 py-2.5 bg-[#AD1457] text-white rounded-xl shadow-md shadow-pink-100 active:scale-95 transition-transform text-[10px] font-bold uppercase tracking-wider"
+                    className="flex-1 py-2.5 bg-[#F06292] text-white rounded-xl shadow-md shadow-rose-100 active:scale-95 transition-transform text-[10px] font-bold uppercase tracking-wider"
                   >
                     Выбрать
                   </button>
@@ -525,7 +525,7 @@ export default function App() {
             className="fixed inset-0 bg-[#FFFDF7] z-[150] p-6 overflow-y-auto"
           >
             <div className="flex justify-between items-center mb-8">
-              <h2 className="font-serif text-3xl text-slate-800">Управление<br/><span className="text-[#AD1457]">магазином</span></h2>
+              <h2 className="font-serif text-3xl text-slate-800">Управление<br/><span className="text-[#F06292]">магазином</span></h2>
               <button 
                 onClick={() => setIsAdminShopOpen(false)}
                 className="p-3 bg-slate-50 rounded-full"
@@ -539,15 +539,15 @@ export default function App() {
                 <button
                   key={cake.id}
                   onClick={() => { setEditingCake(cake); setIsEditModalOpen(true); }}
-                  className="w-full p-5 bg-white border border-pink-50 rounded-2xl flex items-center justify-between shadow-sm active:bg-pink-50/50 transition-colors"
+                  className="w-full p-5 bg-white border border-rose-50 rounded-2xl flex items-center justify-between shadow-sm active:bg-rose-50/50 transition-colors"
                 >
                   <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 rounded-xl bg-pink-50 overflow-hidden flex-shrink-0">
+                    <div className="w-12 h-12 rounded-xl bg-rose-50 overflow-hidden flex-shrink-0">
                       {cake.image && <img src={cake.image} className="w-full h-full object-cover" />}
                     </div>
                     <div className="text-left">
                       <p className="font-bold text-slate-800">{cake.name}</p>
-                      <p className="text-xs text-brand-berry font-bold">{cake.price} BYN</p>
+                      <p className="text-xs text-[#F06292] font-bold">{cake.price} BYN</p>
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-slate-300" />
@@ -590,17 +590,17 @@ export default function App() {
             <motion.div 
               initial={{ y: 30 }}
               animate={{ y: 0 }}
-              className="relative -mt-12 bg-[#FFFDF7] rounded-t-[3.5rem] p-8 min-h-[55vh] shadow-[0_-15px_40px_rgba(0,0,0,0.08)] pb-32"
+              className="relative -mt-12 bg-[#FFF9F9] rounded-t-[3.5rem] p-8 min-h-[55vh] shadow-[0_-15px_40px_rgba(0,0,0,0.08)] pb-32"
             >
               <div className="flex justify-between items-start mb-6">
                 <div>
-                  <p className="text-[#AD1457] font-bold uppercase tracking-widest text-[10px] mb-2">
+                  <p className="text-[#F06292] font-bold uppercase tracking-widest text-[10px] mb-2">
                     {CATEGORIES[selectedCake.category]}
                   </p>
                   <h2 className="font-serif text-3xl text-slate-800 leading-tight">{selectedCake.name}</h2>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-[#AD1457]">{currentPrice}</p>
+                  <p className="text-2xl font-bold text-[#F06292]">{currentPrice}</p>
                   <p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest text-right">BYN</p>
                 </div>
               </div>
@@ -623,8 +623,8 @@ export default function App() {
                         onClick={() => { setSelectedSize(size); tg?.HapticFeedback.selectionChanged(); }}
                         className={`p-3 rounded-2xl border transition-all text-center ${
                           selectedSize.id === size.id 
-                          ? 'bg-[#AD1457] text-white border-[#AD1457] shadow-md' 
-                          : 'bg-white text-slate-600 border-pink-50'
+                          ? 'bg-[#F06292] text-white border-[#F06292] shadow-md' 
+                          : 'bg-white text-slate-600 border-rose-50'
                         }`}
                       >
                         <p className="text-xs font-bold">{size.name}</p>
@@ -646,8 +646,8 @@ export default function App() {
                           onClick={() => { setSelectedFilling(filling); tg?.HapticFeedback.selectionChanged(); }}
                           className={`p-3 rounded-2xl border transition-all text-left flex justify-between items-center ${
                             selectedFilling.id === filling.id 
-                            ? 'bg-[#AD1457] text-white border-[#AD1457] shadow-md' 
-                            : 'bg-white text-slate-600 border-pink-50'
+                            ? 'bg-[#F06292] text-white border-[#F06292] shadow-md' 
+                            : 'bg-white text-slate-600 border-rose-50'
                           }`}
                         >
                           <span className="text-[10px] font-bold">{filling.name}</span>
@@ -670,8 +670,8 @@ export default function App() {
                           onClick={() => { setSelectedBiscuit(biscuit); tg?.HapticFeedback.selectionChanged(); }}
                           className={`p-3 rounded-2xl border transition-all text-left flex justify-between items-center ${
                             selectedBiscuit.id === biscuit.id 
-                            ? 'bg-[#AD1457] text-white border-[#AD1457] shadow-md' 
-                            : 'bg-white text-slate-600 border-pink-50'
+                            ? 'bg-[#F06292] text-white border-[#F06292] shadow-md' 
+                            : 'bg-white text-slate-600 border-rose-50'
                           }`}
                         >
                           <span className="text-[10px] font-bold">{biscuit.name}</span>
@@ -692,8 +692,8 @@ export default function App() {
                         onClick={() => { setSelectedAddon(addon); tg?.HapticFeedback.selectionChanged(); }}
                         className={`p-3 rounded-2xl border transition-all text-left flex justify-between items-center ${
                           selectedAddon.id === addon.id 
-                          ? 'bg-[#AD1457] text-white border-[#AD1457] shadow-md' 
-                          : 'bg-white text-slate-600 border-pink-50'
+                          ? 'bg-[#F06292] text-white border-[#F06292] shadow-md' 
+                          : 'bg-white text-slate-600 border-rose-50'
                         }`}
                       >
                         <span className="text-[10px] font-bold">{addon.name}</span>
@@ -704,10 +704,10 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[#FFFDF7] via-[#FFFDF7] to-transparent z-[130]">
+              <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[#FFF9F9] via-[#FFF9F9] to-transparent z-[130]">
                 <button 
                   onClick={() => { setIsOrderFormOpen(true); tg?.HapticFeedback.impactOccurred('light'); }}
-                  className="w-full py-4.5 bg-[#AD1457] text-white rounded-2xl font-bold text-base shadow-xl shadow-pink-100 active:scale-95 transition-transform flex items-center justify-center space-x-2"
+                  className="w-full py-4.5 bg-[#F06292] text-white rounded-2xl font-bold text-base shadow-xl shadow-rose-100 active:scale-95 transition-transform flex items-center justify-center space-x-2"
                 >
                   <ShoppingBag className="w-5 h-5" />
                   <span>Заказать за {currentPrice} BYN</span>
@@ -738,42 +738,56 @@ export default function App() {
             
             <h2 className="font-serif text-3xl text-[#AD1457] mb-8">Оформление<br/><span className="text-slate-800 text-2xl">заказа</span></h2>
             
-            <form onSubmit={handleOrderSubmit} className="space-y-4">
+            <form onSubmit={handleOrderSubmit} className="space-y-6">
               <div className="space-y-1">
-                <label className="text-[9px] font-bold text-slate-400 uppercase ml-3">Ваше имя</label>
-                <input name="name" type="text" required className="w-full p-4 rounded-2xl border border-pink-100 focus:outline-none focus:ring-1 focus:ring-[#AD1457] bg-white shadow-sm text-sm" />
+                <label className="text-[10px] font-bold text-slate-400 uppercase ml-4 tracking-widest">Ваше имя</label>
+                <input name="name" type="text" required className="w-full p-4.5 rounded-2xl border border-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-200 bg-white shadow-sm text-sm transition-all" />
               </div>
               <div className="space-y-1">
-                <label className="text-[9px] font-bold text-slate-400 uppercase ml-3">Телефон</label>
-                <input name="phone" type="tel" placeholder="+375" required className="w-full p-4 rounded-2xl border border-pink-100 focus:outline-none focus:ring-1 focus:ring-[#AD1457] bg-white shadow-sm text-sm" />
+                <label className="text-[10px] font-bold text-slate-400 uppercase ml-4 tracking-widest">Телефон</label>
+                <input name="phone" type="tel" placeholder="+375" required className="w-full p-4.5 rounded-2xl border border-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-200 bg-white shadow-sm text-sm transition-all" />
               </div>
-              <div className="space-y-1">
-                <label className="text-[9px] font-bold text-slate-400 uppercase ml-3">Способ получения</label>
-                <div className="w-full p-4 rounded-2xl border border-pink-100 bg-pink-50/30 shadow-sm text-sm">
-                  <p className="font-bold text-[#AD1457]">Самовывоз по адресу:</p>
-                  <p className="text-slate-600">Улица Сладкая, 15</p>
-                </div>
-              </div>
+              
               <div className="space-y-4">
-                <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-slate-400 uppercase ml-3">Дата</label>
-                  <input name="date" type="date" required className="w-full p-4 rounded-2xl border border-pink-100 focus:outline-none focus:ring-1 focus:ring-[#AD1457] bg-white shadow-sm text-sm" />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-slate-400 uppercase ml-3">Время</label>
-                  <input name="time" type="time" required className="w-full p-4 rounded-2xl border border-pink-100 focus:outline-none focus:ring-1 focus:ring-[#AD1457] bg-white shadow-sm text-sm" />
+                <div className="relative group">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase ml-4 tracking-widest mb-1 block">Когда заберете?</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="relative">
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-rose-300">
+                        <Clock className="w-4 h-4" />
+                      </div>
+                      <input 
+                        name="date" 
+                        type="date" 
+                        required 
+                        className="w-full pl-11 pr-4 py-4 rounded-2xl border border-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-200 bg-white shadow-sm text-xs transition-all appearance-none" 
+                      />
+                    </div>
+                    <div className="relative">
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-rose-300">
+                        <Star className="w-4 h-4" />
+                      </div>
+                      <input 
+                        name="time" 
+                        type="time" 
+                        required 
+                        className="w-full pl-11 pr-4 py-4 rounded-2xl border border-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-200 bg-white shadow-sm text-xs transition-all appearance-none" 
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
+
               <div className="space-y-1">
-                <label className="text-[9px] font-bold text-slate-400 uppercase ml-3">Пожелания</label>
-                <textarea name="wishes" rows={2} placeholder="Надпись на торте..." className="w-full p-4 rounded-2xl border border-pink-100 focus:outline-none focus:ring-1 focus:ring-[#AD1457] bg-white shadow-sm text-sm" />
+                <label className="text-[10px] font-bold text-slate-400 uppercase ml-4 tracking-widest">Пожелания</label>
+                <textarea name="wishes" rows={2} placeholder="Надпись на торте или декор..." className="w-full p-4.5 rounded-2xl border border-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-200 bg-white shadow-sm text-sm transition-all" />
               </div>
               
               <button 
                 type="submit" 
-                className="w-full py-4.5 bg-[#AD1457] text-white rounded-2xl font-bold text-base shadow-xl shadow-pink-100 mt-6 active:scale-95 transition-transform"
+                className="w-full py-5 bg-[#F06292] text-white rounded-2xl font-bold text-base shadow-xl shadow-rose-100 mt-4 active:scale-95 transition-transform"
               >
-                Подтвердить
+                Подтвердить заказ
               </button>
             </form>
           </motion.div>
@@ -787,30 +801,53 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-[#FFFDF7] z-[200] flex items-center justify-center p-6 text-center"
+            className="fixed inset-0 bg-[#FFF9F9] z-[200] flex items-center justify-center p-6 text-center"
           >
             <motion.div 
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
-              className="bg-white p-8 rounded-[3rem] shadow-2xl border border-pink-50 max-w-sm w-full"
+              className="bg-white p-8 rounded-[3.5rem] shadow-2xl border border-rose-50 max-w-sm w-full relative overflow-hidden"
             >
-              <div className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-4 border-pink-50 shadow-inner">
+              {/* Floating Hearts Animation */}
+              {[...Array(6)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ y: 100, x: Math.random() * 200 - 100, opacity: 0, scale: 0 }}
+                  animate={{ 
+                    y: -200, 
+                    opacity: [0, 1, 0],
+                    scale: [0.5, 1.2, 0.8],
+                    rotate: Math.random() * 90 - 45
+                  }}
+                  transition={{ 
+                    duration: 3 + Math.random() * 2, 
+                    repeat: Infinity,
+                    delay: i * 0.5
+                  }}
+                  className="absolute bottom-0 text-rose-400 pointer-events-none"
+                  style={{ left: '50%' }}
+                >
+                  ❤️
+                </motion.div>
+              ))}
+
+              <div className="w-40 h-40 mx-auto mb-6 rounded-full overflow-hidden border-8 border-rose-50 shadow-xl relative z-10">
                 <img 
-                  src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=300&q=80" 
+                  src="https://images.unsplash.com/photo-1573865668131-974279243a56?auto=format&fit=crop&w=400&q=80" 
                   alt="Cute Cat" 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                 />
               </div>
-              <h2 className="font-serif text-3xl text-[#AD1457] mb-4">Мяу! Заказ принят!</h2>
-              <p className="text-slate-600 mb-8 leading-relaxed">
-                Спасибо за доверие! В ближайшее время мы свяжемся с вами для подтверждения деталей. ✨
+              <h2 className="font-serif text-3xl text-[#D81B60] mb-4">Мяу! Заказ принят!</h2>
+              <p className="text-slate-500 mb-8 leading-relaxed text-sm">
+                Ваш заказ уже в пути к нашему кондитеру. Мы свяжемся с вами совсем скоро! ✨
               </p>
               <button 
                 onClick={() => { setIsOrderSuccessOpen(false); tg?.close(); }}
-                className="w-full py-4 bg-[#AD1457] text-white rounded-2xl font-bold shadow-lg shadow-pink-100 active:scale-95 transition-transform"
+                className="w-full py-4 bg-[#F06292] text-white rounded-2xl font-bold shadow-lg shadow-rose-100 active:scale-95 transition-transform"
               >
-                Отлично!
+                Чудесно!
               </button>
             </motion.div>
           </motion.div>

@@ -31,6 +31,11 @@ async function startServer() {
       return res.status(500).json({ error: "Ошибка конфига: проверьте токены в Vercel" });
     }
 
+    // Проверка на старый отозванный токен (для удобства отладки)
+    if (token.includes("AAHRkYi4s8txsG5zUyu-S_e_j8W-EoJigY8")) {
+      return res.status(401).json({ error: "Вы используете СТАРЫЙ отозванный токен. Обновите TELEGRAM_BOT_TOKEN в настройках!" });
+    }
+
     // Формируем сообщение, используя данные напрямую
     const message = `
 🎂 *НОВЫЙ ЗАКАЗ!*
