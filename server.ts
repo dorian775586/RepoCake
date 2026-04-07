@@ -18,23 +18,24 @@ async function startServer() {
 
   // API: Обработка заказа
   app.post("/api/order", async (req, res) => {
-    // ИСПРАВЛЕНО: Берем данные напрямую из body, так как фронтенд шлет их так
+    // ИСПРАВЛЕНО: Фронтенд присылает данные напрямую в теле запроса (req.body)
     const data = req.body; 
     
     const token = process.env.TELEGRAM_BOT_TOKEN;
     const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
 
-    // Проверка наличия данных (проверяем хотя бы имя клиента или торт)
+    // Проверка: пришло ли хоть что-то
     if (!data || !data.customer) {
-      return res.status(400).json({ error: "Данные заказа отсутствуют или неполные" });
+      console.error("Payload error: Data is missing or 'customer' field is empty");
+      return res.status(400).json({ error: "Данные заказа неполные" });
     }
 
     if (!token || !adminChatId) {
-      console.error("Missing Telegram configuration:", { token: !!token, adminChatId: !!adminChatId });
-      return res.status(500).json({ error: "Настройки бота не завершены" });
+      console.error("Config error: TELEGRAM_BOT_TOKEN or TELEGRAM_ADMIN_CHAT_ID is missing in Vercel Env");
+      return res.status(500).json({ error: "Ошибка конфигурации сервера" });
     }
 
-    // Формируем красивое сообщение (добавил дату, время и пожелания)
+    // Формируем текст сообщения для бота
     const message = `
 🎂 *НОВЫЙ ЗАКАЗ!*
 --------------------------
@@ -58,20 +59,21 @@ async function startServer() {
         }),
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Telegram API error:", errorText);
-        return res.status(500).json({ error: "Ошибка Telegram при отправке" });
+        console.error("Telegram API Error:", result);
+        return res.status(500).json({ error: `TG Error: ${result.description}` });
       }
 
       res.json({ success: true });
-    } catch (error) {
-      console.error("Order error:", error);
-      res.status(500).json({ error: "Ошибка при отправке заказа" });
+    } catch (error: any) {
+      console.error("Critical Server Error:", error);
+      res.status(500).json({ error: "Не удалось отправить заказ в Telegram" });
     }
   });
 
-  // Эндпоинт для вебхука Telegram
+  // Эндпоинт для вебхука Telegram (авто-ответ на /start)
   app.post("/api/webhook", async (req, res) => {
     const token = process.env.TELEGRAM_BOT_TOKEN;
     const appUrl = process.env.APP_URL || "https://repo-cake.vercel.app/";
@@ -85,10 +87,10 @@ async function startServer() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             chat_id: chatId,
-            text: "Добро пожаловать в нашу кондитерскую! Нажмите кнопку ниже, чтобы открыть магазин:",
+            text: "Добро пожаловать! Нажмите кнопку ниже, чтобы открыть магазин:",
             reply_markup: {
               inline_keyboard: [[
-                { text: "Магазин 🍰", web_app: { url: appUrl } }
+                { text: "Открыть магазин 🍰", web_app: { url: appUrl } }
               ]]
             }
           }),
@@ -100,7 +102,7 @@ async function startServer() {
     res.sendStatus(200);
   });
 
-  // Обслуживание статики
+  // Раздача фронтенда
   if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
     const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
@@ -118,7 +120,7 @@ async function startServer() {
 
   if (!process.env.VERCEL) {
     app.listen(PORT, "0.0.0.0", () => {
-      console.log(`Сервер запущен локально: http://localhost:${PORT}`);
+      console.log(`Сервер запущен: http://localhost:${PORT}`);
     });
   }
 
