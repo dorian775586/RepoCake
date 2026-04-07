@@ -30,14 +30,14 @@ async function startServer() {
 🎂 *НОВЫЙ ЗАКАЗ!*
 --------------------------
 🍰 *Торт:* ${orderData.cake}
+💰 *Цена:* ${orderData.price} BYN
 👤 *Клиент:* ${orderData.customer}
 📞 *Телефон:* ${orderData.phone}
-📍 *Адрес:* ${orderData.address}
+🚚 *Тип:* ${orderData.type}
 📅 *Дата:* ${orderData.date}
 ⏰ *Время:* ${orderData.time}
 📝 *Пожелания:* ${orderData.wishes || "нет"}
 --------------------------
-💰 *Цена:* ${orderData.price_per_kg} BYN/кг
     `;
 
     try {
@@ -109,10 +109,10 @@ async function startBotPolling() {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 chat_id: chatId,
-                text: "Добро пожаловать в нашу кондитерскую! Нажмите кнопку ниже, чтобы открыть меню:",
+                text: "Добро пожаловать в нашу кондитерскую! Нажмите кнопку ниже, чтобы открыть магазин:",
                 reply_markup: {
                   inline_keyboard: [[
-                    { text: "Открыть меню 🍰", web_app: { url: appUrl || "https://google.com" } }
+                    { text: "Магазин 🍰", web_app: { url: "https://repo-cake.vercel.app/" } }
                   ]]
                 }
               }),

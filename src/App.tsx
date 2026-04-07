@@ -141,6 +141,7 @@ export default function App() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingCake, setEditingCake] = useState<Partial<Cake> | null>(null);
   const [isAdminShopOpen, setIsAdminShopOpen] = useState(false);
+  const [isOrderSuccessOpen, setIsOrderSuccessOpen] = useState(false);
 
   const tg = (window as any).Telegram?.WebApp;
 
@@ -239,12 +240,13 @@ export default function App() {
     const formData = new FormData(e.target as HTMLFormElement);
     const orderData = {
       cake: selectedCake?.name,
+      price: selectedCake?.price,
       customer: formData.get('name'),
       phone: formData.get('phone'),
-      address: formData.get('address'),
       date: formData.get('date'),
       time: formData.get('time'),
       wishes: formData.get('wishes'),
+      type: 'Самовывоз (Улица Сладкая, 15)'
     };
 
     if (tg) tg.MainButton.showProgress();
@@ -256,13 +258,15 @@ export default function App() {
         body: JSON.stringify({ orderData })
       });
       if (res.ok) {
-        tg?.showAlert("Заказ принят! Наш кондитер уже выбирает лучшие ингредиенты 🎂");
-        tg?.close();
+        setIsOrderFormOpen(false);
+        setSelectedCake(null);
+        setIsOrderSuccessOpen(true);
+        tg?.HapticFeedback.notificationOccurred('success');
       }
     } catch (err) {
       tg?.showAlert("Ошибка отправки. Попробуйте еще раз.");
     } finally {
-      tg?.MainButton.hideProgress();
+      if (tg) tg.MainButton.hideProgress();
     }
   };
 
@@ -292,12 +296,6 @@ export default function App() {
               className="bg-white/80 backdrop-blur-md p-2.5 rounded-xl text-[#AD1457] shadow-sm border border-pink-50 active:scale-90 transition-transform"
             >
               <Instagram className="w-5 h-5" />
-            </button>
-            <button 
-              onClick={handleOpenExternal}
-              className="bg-white/80 backdrop-blur-md p-2.5 rounded-xl text-slate-400 shadow-sm border border-pink-50 active:scale-90 transition-transform"
-            >
-              <ExternalLink className="w-5 h-5" />
             </button>
           </div>
 
@@ -585,8 +583,11 @@ export default function App() {
                 <input name="phone" type="tel" placeholder="+375" required className="w-full p-4 rounded-2xl border border-pink-100 focus:outline-none focus:ring-1 focus:ring-[#AD1457] bg-white shadow-sm text-sm" />
               </div>
               <div className="space-y-1">
-                <label className="text-[9px] font-bold text-slate-400 uppercase ml-3">Адрес доставки</label>
-                <textarea name="address" required rows={2} className="w-full p-4 rounded-2xl border border-pink-100 focus:outline-none focus:ring-1 focus:ring-[#AD1457] bg-white shadow-sm text-sm" />
+                <label className="text-[9px] font-bold text-slate-400 uppercase ml-3">Способ получения</label>
+                <div className="w-full p-4 rounded-2xl border border-pink-100 bg-pink-50/30 shadow-sm text-sm">
+                  <p className="font-bold text-[#AD1457]">Самовывоз по адресу:</p>
+                  <p className="text-slate-600">Улица Сладкая, 15</p>
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
@@ -610,6 +611,42 @@ export default function App() {
                 Подтвердить
               </button>
             </form>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Order Success Modal */}
+      <AnimatePresence>
+        {isOrderSuccessOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-[#FFFDF7] z-[200] flex items-center justify-center p-6 text-center"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              className="bg-white p-8 rounded-[3rem] shadow-2xl border border-pink-50 max-w-sm w-full"
+            >
+              <div className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-4 border-pink-50 shadow-inner">
+                <img 
+                  src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=300&q=80" 
+                  alt="Cute Cat" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <h2 className="font-serif text-3xl text-[#AD1457] mb-4">Мяу! Заказ принят!</h2>
+              <p className="text-slate-600 mb-8 leading-relaxed">
+                Спасибо за доверие! В ближайшее время мы свяжемся с вами для подтверждения деталей. ✨
+              </p>
+              <button 
+                onClick={() => { setIsOrderSuccessOpen(false); tg?.close(); }}
+                className="w-full py-4 bg-[#AD1457] text-white rounded-2xl font-bold shadow-lg shadow-pink-100 active:scale-95 transition-transform"
+              >
+                Отлично!
+              </button>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
