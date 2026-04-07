@@ -158,7 +158,6 @@ export default function App() {
       tg.expand();
       tg.ready();
       
-      // Проверка на админа
       const user = tg.initDataUnsafe?.user;
       if (user) {
         const isUserAdmin = ADMIN_LIST.includes(user.id) || ADMIN_LIST.includes(user.username);
@@ -195,14 +194,6 @@ export default function App() {
     }
   };
 
-  const handleOpenExternal = () => {
-    if (tg) {
-      tg.openLink('https://repo-cake.vercel.app/');
-    } else {
-      window.open('https://repo-cake.vercel.app/', '_blank');
-    }
-  };
-
   const handleSaveCake = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingCake) return;
@@ -211,7 +202,6 @@ export default function App() {
       ...editingCake,
       id: editingCake.id || Date.now(),
       popularity: editingCake.popularity || 50,
-      // Если строка пустая - удаляем поле
       desc: editingCake.desc?.trim() || undefined,
       image: editingCake.image?.trim() || undefined,
       calories: editingCake.calories?.trim() || undefined,
@@ -238,6 +228,8 @@ export default function App() {
   const handleOrderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
+    
+    // Формируем плоский объект данных
     const orderData = {
       cake: selectedCake?.name,
       price: selectedCake?.price,
@@ -254,16 +246,13 @@ export default function App() {
     }
     
     try {
-      // Используем относительный путь - это самый надежный вариант для fetch
       const apiUrl = '/api/order';
-      console.log("Sending order to:", apiUrl, orderData);
-
       const res = await fetch(apiUrl, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ orderData })
+        body: JSON.stringify(orderData) // Отправляем данные напрямую без лишней обертки
       });
 
       if (res.ok) {
@@ -280,7 +269,7 @@ export default function App() {
     } catch (err: any) {
       console.error("Order error:", err);
       if (tg) {
-        tg.showAlert(`Ошибка: ${err.message || "Не удалось отправить заказ. Проверьте настройки бота."}`);
+        tg.showAlert(`Ошибка: ${err.message || "Не удалось отправить заказ."}`);
       } else {
         alert("Ошибка отправки заказа.");
       }
@@ -306,7 +295,6 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Catalog Page */}
       <main className="pb-32">
         <header className="pt-10 pb-6 px-5 text-center relative">
           <div className="absolute top-4 left-5 flex space-x-2">
@@ -345,22 +333,8 @@ export default function App() {
           ))}
         </div>
 
-        {/* Sort & Title */}
-        <div className="px-5 flex items-center justify-between mt-6 mb-4">
-          <h2 className="text-lg font-bold text-slate-800">{CATEGORIES[currentCategory]}</h2>
-          <select 
-            value={currentSort}
-            onChange={(e) => { setCurrentSort(e.target.value); tg?.HapticFeedback.selectionChanged(); }}
-            className="text-[10px] font-bold text-[#AD1457] bg-transparent outline-none uppercase tracking-wider"
-          >
-            <option value="popularity">Популярные</option>
-            <option value="price-asc">Дешевле</option>
-            <option value="price-desc">Дороже</option>
-          </select>
-        </div>
-
         {/* Grid */}
-        <div className="px-4 grid grid-cols-2 gap-3">
+        <div className="px-4 grid grid-cols-2 gap-3 mt-6">
           {filteredCakes.map((cake, idx) => (
             <motion.div
               key={cake.id}
@@ -374,11 +348,7 @@ export default function App() {
                 onClick={() => setSelectedCake(cake)}
               >
                 {cake.image ? (
-                  <img 
-                    src={cake.image} 
-                    alt={cake.name} 
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={cake.image} alt={cake.name} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-pink-200">
                     <ShoppingBag className="w-12 h-12" />
@@ -399,100 +369,17 @@ export default function App() {
                     {cake.price} <span className="text-[9px] font-normal text-slate-400 uppercase tracking-tighter">BYN</span>
                   </p>
                 </div>
-                <div className="flex space-x-1.5">
-                  {isAdmin && (
-                    <button 
-                      onClick={() => { setEditingCake(cake); setIsEditModalOpen(true); }}
-                      className="p-2.5 bg-slate-50 rounded-xl text-slate-400 active:bg-slate-100"
-                    >
-                      <Edit2 className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                  <button 
-                    onClick={() => setSelectedCake(cake)}
-                    className="flex-1 py-2.5 bg-[#AD1457] text-white rounded-xl shadow-md shadow-pink-100 active:scale-95 transition-transform text-[10px] font-bold uppercase tracking-wider"
-                  >
-                    Выбрать
-                  </button>
-                </div>
+                <button 
+                  onClick={() => setSelectedCake(cake)}
+                  className="w-full py-2.5 bg-[#AD1457] text-white rounded-xl shadow-md shadow-pink-100 active:scale-95 transition-transform text-[10px] font-bold uppercase tracking-wider"
+                >
+                  Выбрать
+                </button>
               </div>
             </motion.div>
           ))}
         </div>
       </main>
-
-      {/* Admin Bottom Bar */}
-      <AnimatePresence>
-        {isAdmin && (
-          <motion.div 
-            initial={{ y: 100 }}
-            animate={{ y: 0 }}
-            exit={{ y: 100 }}
-            className="fixed bottom-0 left-0 right-0 bg-white border-t border-pink-50 p-4 z-[110] flex space-x-3 shadow-[0_-10px_30px_rgba(0,0,0,0.05)]"
-          >
-            <button 
-              onClick={() => setIsAdminShopOpen(true)}
-              className="flex-1 py-4 bg-black text-white rounded-2xl font-bold text-sm flex items-center justify-center space-x-2 active:scale-95 transition-transform"
-            >
-              <Store className="w-5 h-5" />
-              <span>Магазин</span>
-            </button>
-            <button 
-              onClick={() => { setEditingCake({ category: 'sponge' }); setIsEditModalOpen(true); }}
-              className="p-4 bg-brand-berry text-white rounded-2xl active:scale-95 transition-transform"
-            >
-              <Plus className="w-6 h-6" />
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Admin Shop Management Modal */}
-      <AnimatePresence>
-        {isAdminShopOpen && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-[#FFFDF7] z-[150] p-6 overflow-y-auto"
-          >
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="font-serif text-3xl text-slate-800">Управление<br/><span className="text-[#AD1457]">магазином</span></h2>
-              <button 
-                onClick={() => setIsAdminShopOpen(false)}
-                className="p-3 bg-slate-50 rounded-full"
-              >
-                <X className="w-6 h-6 text-slate-300" />
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              {cakes.map(cake => (
-                <button
-                  key={cake.id}
-                  onClick={() => { setEditingCake(cake); setIsEditModalOpen(true); }}
-                  className="w-full p-5 bg-white border border-pink-50 rounded-2xl flex items-center justify-between shadow-sm active:bg-pink-50/50 transition-colors"
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 rounded-xl bg-pink-50 overflow-hidden flex-shrink-0">
-                      {cake.image && <img src={cake.image} className="w-full h-full object-cover" />}
-                    </div>
-                    <div className="text-left">
-                      <p className="font-bold text-slate-800">{cake.name}</p>
-                      <p className="text-xs text-brand-berry font-bold">{cake.price} BYN</p>
-                    </div>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-slate-300" />
-                </button>
-              ))}
-            </div>
-            
-            <div className="mt-10 text-center">
-              <p className="text-xs text-slate-400 italic">Нажмите на торт, чтобы изменить его или удалить</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Details Modal */}
       <AnimatePresence>
@@ -537,29 +424,6 @@ export default function App() {
                 </p>
               )}
 
-              <div className="grid grid-cols-2 gap-4 mb-10">
-                <div className="bg-white border border-pink-50 p-4 rounded-3xl flex items-center space-x-3">
-                  <div className="p-2 bg-pink-50 rounded-xl text-[#AD1457]">
-                    <Weight className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-[8px] font-bold text-slate-400 uppercase">Вес</p>
-                    <p className="text-xs font-bold">от 1.5 кг</p>
-                  </div>
-                </div>
-                {selectedCake.calories && (
-                  <div className="bg-white border border-pink-50 p-4 rounded-3xl flex items-center space-x-3">
-                    <div className="p-2 bg-pink-50 rounded-xl text-[#AD1457]">
-                      <Flame className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="text-[8px] font-bold text-slate-400 uppercase">Энергия</p>
-                      <p className="text-xs font-bold">{selectedCake.calories}</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-
               <button 
                 onClick={() => { setIsOrderFormOpen(true); tg?.HapticFeedback.impactOccurred('light'); }}
                 className="w-full py-4.5 bg-[#AD1457] text-white rounded-2xl font-bold text-base shadow-xl shadow-pink-100 active:scale-95 transition-transform flex items-center justify-center space-x-2"
@@ -572,7 +436,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Order Form Modal */}
+      {/* Order Form Modal - ИСПРАВЛЕННЫЕ ИНПУТЫ */}
       <AnimatePresence>
         {isOrderFormOpen && (
           <motion.div 
@@ -599,25 +463,23 @@ export default function App() {
               </div>
               <div className="space-y-1">
                 <label className="text-[9px] font-bold text-slate-400 uppercase ml-3">Телефон</label>
-                <input name="phone" type="tel" placeholder="+375" required className="w-full p-4 rounded-2xl border border-pink-100 focus:outline-none focus:ring-1 focus:ring-[#AD1457] bg-white shadow-sm text-sm" />
+                {/* Изменено на type="text" для избежания конфликтов в TG */}
+                <input name="phone" type="text" placeholder="+375..." required className="w-full p-4 rounded-2xl border border-pink-100 focus:outline-none focus:ring-1 focus:ring-[#AD1457] bg-white shadow-sm text-sm" />
               </div>
-              <div className="space-y-1">
-                <label className="text-[9px] font-bold text-slate-400 uppercase ml-3">Способ получения</label>
-                <div className="w-full p-4 rounded-2xl border border-pink-100 bg-pink-50/30 shadow-sm text-sm">
-                  <p className="font-bold text-[#AD1457]">Самовывоз по адресу:</p>
-                  <p className="text-slate-600">Улица Сладкая, 15</p>
-                </div>
-              </div>
+              
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="text-[9px] font-bold text-slate-400 uppercase ml-3">Дата</label>
-                  <input name="date" type="date" required className="w-full p-4 rounded-2xl border border-pink-100 focus:outline-none focus:ring-1 focus:ring-[#AD1457] bg-white shadow-sm text-sm" />
+                  {/* Изменено на type="text" для стабильности */}
+                  <input name="date" type="text" placeholder="ДД.ММ.ГГГГ" required className="w-full p-4 rounded-2xl border border-pink-100 focus:outline-none focus:ring-1 focus:ring-[#AD1457] bg-white shadow-sm text-sm" />
                 </div>
                 <div className="space-y-1">
                   <label className="text-[9px] font-bold text-slate-400 uppercase ml-3">Время</label>
-                  <input name="time" type="time" required className="w-full p-4 rounded-2xl border border-pink-100 focus:outline-none focus:ring-1 focus:ring-[#AD1457] bg-white shadow-sm text-sm" />
+                  {/* Изменено на type="text" */}
+                  <input name="time" type="text" placeholder="14:00" required className="w-full p-4 rounded-2xl border border-pink-100 focus:outline-none focus:ring-1 focus:ring-[#AD1457] bg-white shadow-sm text-sm" />
                 </div>
               </div>
+              
               <div className="space-y-1">
                 <label className="text-[9px] font-bold text-slate-400 uppercase ml-3">Пожелания</label>
                 <textarea name="wishes" rows={2} placeholder="Надпись на торте..." className="w-full p-4 rounded-2xl border border-pink-100 focus:outline-none focus:ring-1 focus:ring-[#AD1457] bg-white shadow-sm text-sm" />
@@ -648,16 +510,9 @@ export default function App() {
               animate={{ scale: 1, y: 0 }}
               className="bg-white p-8 rounded-[3rem] shadow-2xl border border-pink-50 max-w-sm w-full"
             >
-              <div className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-4 border-pink-50 shadow-inner">
-                <img 
-                  src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=300&q=80" 
-                  alt="Cute Cat" 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <h2 className="font-serif text-3xl text-[#AD1457] mb-4">Мяу! Заказ принят!</h2>
+              <h2 className="font-serif text-3xl text-[#AD1457] mb-4">Заказ принят!</h2>
               <p className="text-slate-600 mb-8 leading-relaxed">
-                Спасибо за доверие! В ближайшее время мы свяжемся с вами для подтверждения деталей. ✨
+                Спасибо! Мы свяжемся с вами для подтверждения. ✨
               </p>
               <button 
                 onClick={() => { setIsOrderSuccessOpen(false); tg?.close(); }}
@@ -665,118 +520,6 @@ export default function App() {
               >
                 Отлично!
               </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Admin Edit Modal */}
-      <AnimatePresence>
-        {isEditModalOpen && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[200] flex items-end justify-center p-0"
-          >
-            <motion.div 
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              className="bg-white w-full rounded-t-[3rem] p-8 max-h-[90vh] overflow-y-auto shadow-2xl"
-            >
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-2xl font-serif text-[#AD1457]">
-                  {editingCake?.id ? "Редактировать" : "Новый торт"}
-                </h3>
-                <button onClick={() => setIsEditModalOpen(false)} className="p-2 bg-slate-50 rounded-full">
-                  <X className="w-5 h-5 text-slate-300" />
-                </button>
-              </div>
-              
-              <form onSubmit={handleSaveCake} className="space-y-4">
-                <div className="space-y-1">
-                  <label className="text-[8px] font-bold text-slate-400 uppercase ml-3">Название</label>
-                  <input 
-                    value={editingCake?.name || ''} 
-                    onChange={e => setEditingCake(prev => ({ ...prev!, name: e.target.value }))}
-                    required 
-                    className="w-full p-3.5 rounded-xl border border-pink-50 bg-slate-50 focus:outline-none text-sm" 
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-[8px] font-bold text-slate-400 uppercase ml-3">Цена (BYN)</label>
-                    <input 
-                      type="number"
-                      value={editingCake?.price || ''} 
-                      onChange={e => setEditingCake(prev => ({ ...prev!, price: parseInt(e.target.value) }))}
-                      required 
-                      className="w-full p-3.5 rounded-xl border border-pink-50 bg-slate-50 focus:outline-none text-sm" 
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[8px] font-bold text-slate-400 uppercase ml-3">Категория</label>
-                    <select 
-                      value={editingCake?.category || 'sponge'} 
-                      onChange={e => setEditingCake(prev => ({ ...prev!, category: e.target.value }))}
-                      className="w-full p-3.5 rounded-xl border border-pink-50 bg-slate-50 focus:outline-none text-sm"
-                    >
-                      <option value="sponge">Бисквитные</option>
-                      <option value="mousse">Муссовые</option>
-                      <option value="kids">Детские</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-[8px] font-bold text-slate-400 uppercase ml-3">URL Фото (опц.)</label>
-                    <input 
-                      value={editingCake?.image || ''} 
-                      onChange={e => setEditingCake(prev => ({ ...prev!, image: e.target.value }))}
-                      placeholder="Пусто = без фото"
-                      className="w-full p-3.5 rounded-xl border border-pink-50 bg-slate-50 focus:outline-none text-sm" 
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[8px] font-bold text-slate-400 uppercase ml-3">Калории (опц.)</label>
-                    <input 
-                      value={editingCake?.calories || ''} 
-                      onChange={e => setEditingCake(prev => ({ ...prev!, calories: e.target.value }))}
-                      placeholder="Напр: 300 ккал"
-                      className="w-full p-3.5 rounded-xl border border-pink-50 bg-slate-50 focus:outline-none text-sm" 
-                    />
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[8px] font-bold text-slate-400 uppercase ml-3">Описание (опц.)</label>
-                  <textarea 
-                    value={editingCake?.desc || ''} 
-                    onChange={e => setEditingCake(prev => ({ ...prev!, desc: e.target.value }))}
-                    rows={3} 
-                    placeholder="Пусто = без описания"
-                    className="w-full p-3.5 rounded-xl border border-pink-50 bg-slate-50 focus:outline-none text-sm" 
-                  />
-                </div>
-                
-                <div className="flex space-x-3 pt-4">
-                  {editingCake?.id && (
-                    <button 
-                      type="button" 
-                      onClick={() => handleDeleteCake(editingCake.id!)}
-                      className="flex-1 py-4 rounded-xl font-bold text-red-400 border border-red-50 text-sm"
-                    >
-                      Удалить
-                    </button>
-                  )}
-                  <button 
-                    type="submit" 
-                    className="flex-[2] py-4 bg-[#AD1457] text-white rounded-xl font-bold shadow-lg shadow-pink-100 text-sm"
-                  >
-                    Сохранить
-                  </button>
-                </div>
-              </form>
             </motion.div>
           </motion.div>
         )}
