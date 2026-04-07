@@ -319,7 +319,8 @@ export default function App() {
       date: formData.get('date'),
       time: formData.get('time'),
       wishes: formData.get('wishes'),
-      type: 'Самовывоз (Улица Сладкая, 15)'
+      type: 'Самовывоз (Улица Сладкая, 15)',
+      chatId: tg?.initDataUnsafe?.user?.id
     };
 
     if (tg) {

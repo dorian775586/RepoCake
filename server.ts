@@ -70,6 +70,33 @@ async function startServer() {
         return res.status(500).json({ error: `Ошибка Telegram: ${result.description}` });
       }
 
+      // Отправляем подтверждение пользователю, если есть chatId
+      if (data.chatId) {
+        const userMessage = `
+✨ *Ваш заказ принят!*
+
+Спасибо за доверие! Мы уже передали детали нашим кондитерам 👩‍🍳👨‍🍳
+
+В ближайшее время мы свяжемся с вами для окончательного подтверждения заказа.
+
+С любовью, ваша кондитерская 🍰❤️`.trim();
+
+        try {
+          await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: data.chatId,
+              text: userMessage,
+              parse_mode: "Markdown",
+            }),
+          });
+        } catch (err) {
+          console.error("Ошибка при отправке сообщения пользователю:", err);
+          // Не прерываем основной процесс, если не удалось отправить сообщение пользователю
+        }
+      }
+
       res.json({ success: true });
     } catch (error: any) {
       res.status(500).json({ error: `Ошибка сервера: ${error.message}` });
