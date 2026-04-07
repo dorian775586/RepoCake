@@ -91,47 +91,34 @@ async function startServer() {
     console.log(`Сервер запущен: http://localhost:${PORT}`);
   });
 
-  // Простейший Long Polling для обработки /start (чтобы бот отвечал)
-  startBotPolling();
-}
+  // Эндпоинт для вебхука Telegram (вместо Polling)
+  app.post("/api/webhook", async (req, res) => {
+    const token = process.env.TELEGRAM_BOT_TOKEN;
+    const appUrl = process.env.APP_URL || "https://repo-cake.vercel.app/";
+    const update = req.body;
 
-async function startBotPolling() {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  const appUrl = process.env.APP_URL;
-  if (!token) return;
-
-  let lastUpdateId = 0;
-
-  setInterval(async () => {
-    try {
-      const response = await fetch(`https://api.telegram.org/bot${token}/getUpdates?offset=${lastUpdateId + 1}&timeout=10`);
-      const data = await response.json();
-
-      if (data.ok && data.result.length > 0) {
-        for (const update of data.result) {
-          lastUpdateId = update.update_id;
-          if (update.message && update.message.text === "/start") {
-            const chatId = update.message.chat.id;
-            await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                chat_id: chatId,
-                text: "Добро пожаловать в нашу кондитерскую! Нажмите кнопку ниже, чтобы открыть магазин:",
-                reply_markup: {
-                  inline_keyboard: [[
-                    { text: "Магазин 🍰", web_app: { url: "https://repo-cake.vercel.app/" } }
-                  ]]
-                }
-              }),
-            });
-          }
-        }
+    if (update.message && update.message.text === "/start") {
+      const chatId = update.message.chat.id;
+      try {
+        await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: "Добро пожаловать в нашу кондитерскую! Нажмите кнопку ниже, чтобы открыть магазин:",
+            reply_markup: {
+              inline_keyboard: [[
+                { text: "Магазин 🍰", web_app: { url: appUrl } }
+              ]]
+            }
+          }),
+        });
+      } catch (err) {
+        console.error("Webhook error:", err);
       }
-    } catch (e) {
-      // Игнорируем ошибки сети в поллинге
     }
-  }, 3000);
+    res.sendStatus(200);
+  });
 }
 
 startServer();
