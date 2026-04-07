@@ -111,7 +111,7 @@ const INITIAL_CAKES: Cake[] = [
     category: "sponge", 
     popularity: 92, 
     desc: "Насыщенный шоколадный вкус для истинных ценителей.", 
-    image: "https://images.unsplash.com/photo-1578985543812-0525828d51cd?auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=800&q=80",
     calories: "410 ккал"
   },
   { 
@@ -131,7 +131,7 @@ const INITIAL_CAKES: Cake[] = [
     category: "sponge", 
     popularity: 80, 
     desc: "Ароматные коржи с корицей и грецким орехом.", 
-    image: "https://images.unsplash.com/photo-1536599485751-25e70d28864a?auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1534432182912-63863115e106?auto=format&fit=crop&w=800&q=80",
     calories: "290 ккал"
   },
   { 
@@ -182,7 +182,18 @@ export default function App() {
   useEffect(() => {
     const saved = localStorage.getItem('cakes_v5');
     if (saved) {
-      setCakes(JSON.parse(saved));
+      let loadedCakes = JSON.parse(saved);
+      // Исправление битых ссылок для существующих пользователей
+      loadedCakes = loadedCakes.map((c: Cake) => {
+        if (c.id === 4 && c.image?.includes('1578985543812')) {
+          return { ...c, image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=800&q=80" };
+        }
+        if (c.id === 6 && c.image?.includes('1536599485751')) {
+          return { ...c, image: "https://images.unsplash.com/photo-1534432182912-63863115e106?auto=format&fit=crop&w=800&q=80" };
+        }
+        return c;
+      });
+      setCakes(loadedCakes);
     } else {
       setCakes(INITIAL_CAKES);
     }
@@ -434,6 +445,7 @@ export default function App() {
                     src={cake.image} 
                     alt={cake.name} 
                     className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-pink-200">
@@ -560,7 +572,13 @@ export default function App() {
             className="fixed inset-0 bg-white z-[120] overflow-y-auto"
           >
             <div className="relative h-[45vh] bg-pink-50/30">
-              {selectedCake.image && <img src={selectedCake.image} className="w-full h-full object-cover" />}
+              {selectedCake.image && (
+                <img 
+                  src={selectedCake.image} 
+                  className="w-full h-full object-cover" 
+                  referrerPolicy="no-referrer"
+                />
+              )}
               <button 
                 onClick={() => setSelectedCake(null)}
                 className="absolute top-6 left-5 bg-white/90 backdrop-blur-md p-3 rounded-full shadow-lg"
