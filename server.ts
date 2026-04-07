@@ -112,7 +112,7 @@ async function startBotPolling() {
                 text: "Добро пожаловать в нашу кондитерскую! Нажмите кнопку ниже, чтобы открыть магазин:",
                 reply_markup: {
                   inline_keyboard: [[
-                    { text: "Магазин 🍰", web_app: { url: "https://repo-cake.vercel.app/" } }
+                    { text: "Магазин 🍰", web_app: { url: appUrl || "https://repo-cake.vercel.app/" } }
                   ]]
                 }
               }),

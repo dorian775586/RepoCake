@@ -249,22 +249,37 @@ export default function App() {
       type: 'Самовывоз (Улица Сладкая, 15)'
     };
 
-    if (tg) tg.MainButton.showProgress();
+    if (tg) {
+      tg.MainButton.showProgress();
+    }
     
     try {
+      // Используем относительный путь, если мы на том же домене, 
+      // или пытаемся достучаться до API текущего сервера
       const res = await fetch('/api/order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderData })
       });
+
       if (res.ok) {
         setIsOrderFormOpen(false);
         setSelectedCake(null);
         setIsOrderSuccessOpen(true);
-        tg?.HapticFeedback.notificationOccurred('success');
+        if (tg) {
+          tg.HapticFeedback.notificationOccurred('success');
+        }
+      } else {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Ошибка сервера');
       }
-    } catch (err) {
-      tg?.showAlert("Ошибка отправки. Попробуйте еще раз.");
+    } catch (err: any) {
+      console.error("Order error:", err);
+      if (tg) {
+        tg.showAlert(`Ошибка: ${err.message || "Не удалось отправить заказ. Проверьте настройки бота."}`);
+      } else {
+        alert("Ошибка отправки заказа.");
+      }
     } finally {
       if (tg) tg.MainButton.hideProgress();
     }
