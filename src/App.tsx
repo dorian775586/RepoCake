@@ -15,7 +15,8 @@ import {
   ShoppingBag,
   Star,
   Clock,
-  Weight
+  Weight,
+  Instagram
 } from 'lucide-react';
 
 // --- Types ---
@@ -30,10 +31,8 @@ interface Cake {
 }
 
 // СПИСОК АДМИНОВ (ID или Username)
-// Добавь сюда свой ID (число) или Username (строка без @)
 const ADMIN_LIST: (string | number)[] = [
-  "skolodko38", // Твой возможный username
-  // 123456789, // Твой Telegram ID (узнай у @userinfobot)
+  "skolodko38", 
 ];
 
 const CATEGORIES: Record<string, string> = {
@@ -52,7 +51,7 @@ const INITIAL_CAKES: Cake[] = [
     category: "sponge", 
     popularity: 95, 
     desc: "Классический десерт с ярко-красными бисквитами и нежнейшим крем-чизом. Идеальный баланс сладости и легкой кислинки.", 
-    image: "https://images.unsplash.com/photo-1586788680434-30d324671ff6?auto=format&fit=crop&w=800&q=80" 
+    image: "https://images.unsplash.com/photo-1616541823729-00fe0aacd32c?auto=format&fit=crop&w=800&q=80" 
   },
   { 
     id: 2, 
@@ -71,6 +70,51 @@ const INITIAL_CAKES: Cake[] = [
     popularity: 100, 
     desc: "Шоколадный взрыв с космическим декором. Внутри — три вида шоколада и хрустящие шарики. Мечта любого ребенка!", 
     image: "https://images.unsplash.com/photo-1535141192574-5d4897c12636?auto=format&fit=crop&w=800&q=80" 
+  },
+  { 
+    id: 4, 
+    name: "Шоко-Трюфель", 
+    price: 48, 
+    category: "sponge", 
+    popularity: 92, 
+    desc: "Насыщенный шоколадный вкус для истинных ценителей. Бельгийский шоколад и ганаш в каждом кусочке.", 
+    image: "https://images.unsplash.com/photo-1578985543812-0525828d51cd?auto=format&fit=crop&w=800&q=80" 
+  },
+  { 
+    id: 5, 
+    name: "Чизкейк Классик", 
+    price: 38, 
+    category: "mousse", 
+    popularity: 85, 
+    desc: "Настоящий Нью-Йорк чизкейк на песочной основе. Плотный, сливочный и невероятно нежный.", 
+    image: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=800&q=80" 
+  },
+  { 
+    id: 6, 
+    name: "Морковный пряный", 
+    price: 36, 
+    category: "sponge", 
+    popularity: 80, 
+    desc: "Ароматные коржи с корицей, грецким орехом и карамелью. Покрыт легким сметанным кремом.", 
+    image: "https://images.unsplash.com/photo-1536599485751-25e70d28864a?auto=format&fit=crop&w=800&q=80" 
+  },
+  { 
+    id: 7, 
+    name: "Фисташка-Малина", 
+    price: 52, 
+    category: "mousse", 
+    popularity: 94, 
+    desc: "Фисташковый мусс с малиновым конфитюром. Изысканное сочетание для гурманов.", 
+    image: "https://images.unsplash.com/photo-1519340333755-56e9c1d04579?auto=format&fit=crop&w=800&q=80" 
+  },
+  { 
+    id: 8, 
+    name: "Фруктовый Рай", 
+    price: 45, 
+    category: "kids", 
+    popularity: 89, 
+    desc: "Легкий ванильный бисквит с обилием свежих сезонных фруктов и ягод. Минимум калорий, максимум вкуса.", 
+    image: "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=800&q=80" 
   }
 ];
 
@@ -89,7 +133,7 @@ export default function App() {
 
   // Load data & Check Auth
   useEffect(() => {
-    const saved = localStorage.getItem('cakes_v3');
+    const saved = localStorage.getItem('cakes_v4');
     if (saved) {
       setCakes(JSON.parse(saved));
     } else {
@@ -112,7 +156,7 @@ export default function App() {
   // Save data
   useEffect(() => {
     if (cakes.length > 0) {
-      localStorage.setItem('cakes_v3', JSON.stringify(cakes));
+      localStorage.setItem('cakes_v4', JSON.stringify(cakes));
     }
   }, [cakes]);
 
@@ -133,8 +177,8 @@ export default function App() {
       setIsAdmin(!isAdmin);
       tg?.HapticFeedback.impactOccurred('medium');
     } else {
-      // Если не админ - просто легкая вибрация, ничего не происходит
-      tg?.HapticFeedback.notificationOccurred('error');
+      // Для обычных пользователей - переход в инсту
+      window.open('https://instagram.com/your_account', '_blank');
     }
   };
 
@@ -215,9 +259,9 @@ export default function App() {
         <header className="pt-10 pb-6 px-5 text-center relative">
           <button 
             onClick={handleToggleAdmin}
-            className="absolute top-4 left-5 opacity-10 italic font-serif text-[#AD1457] text-xs py-2 px-4"
+            className="absolute top-4 left-5 bg-white/80 backdrop-blur-md p-2.5 rounded-xl text-[#AD1457] shadow-sm border border-pink-50 active:scale-90 transition-transform"
           >
-            Sweet Art
+            <Instagram className="w-5 h-5" />
           </button>
           <motion.h1 
             initial={{ opacity: 0, y: 10 }}
@@ -261,17 +305,17 @@ export default function App() {
         </div>
 
         {/* Grid */}
-        <div className="px-5 grid grid-cols-1 gap-6">
+        <div className="px-4 grid grid-cols-2 gap-3">
           {filteredCakes.map((cake, idx) => (
             <motion.div
               key={cake.id}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05 }}
-              className="group relative bg-white rounded-[2.5rem] overflow-hidden shadow-xl shadow-pink-100/20 border border-pink-50/30"
+              className="group relative bg-white rounded-3xl overflow-hidden shadow-lg shadow-pink-100/10 border border-pink-50/30 flex flex-col"
             >
               <div 
-                className="relative h-64 overflow-hidden cursor-pointer"
+                className="relative h-44 overflow-hidden cursor-pointer"
                 onClick={() => setSelectedCake(cake)}
               >
                 <img 
@@ -279,35 +323,33 @@ export default function App() {
                   alt={cake.name} 
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                <div className="absolute bottom-6 left-6 text-white">
-                  <div className="flex items-center space-x-2 mb-1.5">
-                    <span className="bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-widest">
-                      {CATEGORIES[cake.category]}
-                    </span>
-                  </div>
-                  <h3 className="font-serif text-2xl">{cake.name}</h3>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute bottom-3 left-3 right-3 text-white">
+                  <p className="bg-white/20 backdrop-blur-md px-1.5 py-0.5 rounded-full text-[7px] font-bold uppercase tracking-widest inline-block mb-1">
+                    {CATEGORIES[cake.category]}
+                  </p>
+                  <h3 className="font-serif text-base leading-tight line-clamp-1">{cake.name}</h3>
                 </div>
               </div>
               
-              <div className="p-6 flex justify-between items-center">
-                <div>
-                  <p className="text-xl font-bold text-[#AD1457]">
-                    {cake.price} <span className="text-[10px] font-normal text-slate-400 uppercase tracking-tighter">BYN/кг</span>
+              <div className="p-3 flex flex-col justify-between flex-grow">
+                <div className="mb-2">
+                  <p className="text-lg font-bold text-[#AD1457]">
+                    {cake.price} <span className="text-[9px] font-normal text-slate-400 uppercase tracking-tighter">BYN/кг</span>
                   </p>
                 </div>
-                <div className="flex space-x-2">
+                <div className="flex space-x-1.5">
                   {isAdmin && (
                     <button 
                       onClick={() => { setEditingCake(cake); setIsEditModalOpen(true); }}
-                      className="p-3.5 bg-slate-50 rounded-2xl text-slate-400 active:bg-slate-100"
+                      className="p-2.5 bg-slate-50 rounded-xl text-slate-400 active:bg-slate-100"
                     >
-                      <Edit2 className="w-4 h-4" />
+                      <Edit2 className="w-3.5 h-3.5" />
                     </button>
                   )}
                   <button 
                     onClick={() => setSelectedCake(cake)}
-                    className="px-6 py-3.5 bg-[#AD1457] text-white rounded-2xl shadow-lg shadow-pink-100 active:scale-95 transition-transform text-xs font-bold uppercase tracking-widest"
+                    className="flex-1 py-2.5 bg-[#AD1457] text-white rounded-xl shadow-md shadow-pink-100 active:scale-95 transition-transform text-[10px] font-bold uppercase tracking-wider"
                   >
                     Выбрать
                   </button>
