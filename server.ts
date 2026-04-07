@@ -15,7 +15,13 @@ async function startServer() {
   const PORT = 3000;
 
   app.use(express.json());
-  app.use(cors());
+  
+  // Максимально разрешаем CORS для работы с Vercel
+  app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Accept', 'Authorization']
+  }));
 
   // API: Обработка заказа
   app.post("/api/order", async (req, res) => {

@@ -255,13 +255,22 @@ export default function App() {
     
     try {
       // Если мы на Vercel, отправляем запрос на этот сервер AI Studio
-      const apiUrl = window.location.hostname.includes('vercel.app') 
+      const currentHost = window.location.hostname;
+      const isVercel = currentHost.includes('vercel.app');
+      
+      const apiUrl = isVercel 
         ? 'https://ais-dev-m6ibgf6cp6gvlgbqvlmtgb-88698830637.europe-west2.run.app/api/order'
         : '/api/order';
 
+      console.log("Sending order to:", apiUrl);
+
       const res = await fetch(apiUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        mode: 'cors', // Явно указываем режим CORS
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify({ orderData })
       });
 
