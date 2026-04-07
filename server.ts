@@ -18,27 +18,34 @@ async function startServer() {
 
   // API: Обработка заказа
   app.post("/api/order", async (req, res) => {
-    const { orderData } = req.body;
+    // ИСПРАВЛЕНО: Берем данные напрямую из body, так как фронтенд шлет их так
+    const data = req.body; 
+    
     const token = process.env.TELEGRAM_BOT_TOKEN;
     const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
 
-    if (!orderData) {
-      return res.status(400).json({ error: "Данные заказа отсутствуют" });
+    // Проверка наличия данных (проверяем хотя бы имя клиента или торт)
+    if (!data || !data.customer) {
+      return res.status(400).json({ error: "Данные заказа отсутствуют или неполные" });
     }
 
     if (!token || !adminChatId) {
       console.error("Missing Telegram configuration:", { token: !!token, adminChatId: !!adminChatId });
-      return res.status(500).json({ error: "Настройки бота не завершены (токен или ID админа)" });
+      return res.status(500).json({ error: "Настройки бота не завершены" });
     }
 
+    // Формируем красивое сообщение (добавил дату, время и пожелания)
     const message = `
 🎂 *НОВЫЙ ЗАКАЗ!*
 --------------------------
-🍰 *Торт:* ${orderData.cake}
-💰 *Цена:* ${orderData.price} BYN
-👤 *Клиент:* ${orderData.customer}
-📞 *Телефон:* ${orderData.phone}
---------------------------`;
+🍰 *Торт:* ${data.cake || 'Не указан'}
+💰 *Цена:* ${data.price || 0} BYN
+👤 *Клиент:* ${data.customer}
+📞 *Телефон:* ${data.phone}
+📅 *Дата:* ${data.date || '-'}
+⏰ *Время:* ${data.time || '-'}
+📝 *Пожелания:* ${data.wishes || '-'}
+--------------------------`.trim();
 
     try {
       const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
@@ -54,7 +61,7 @@ async function startServer() {
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Telegram API error:", errorText);
-        return res.status(500).json({ error: `Telegram API error: ${response.status}` });
+        return res.status(500).json({ error: "Ошибка Telegram при отправке" });
       }
 
       res.json({ success: true });
@@ -93,10 +100,8 @@ async function startServer() {
     res.sendStatus(200);
   });
 
-  // Интеграция Vite для разработки или обслуживание статики для продакшена
+  // Обслуживание статики
   if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
-    // Используем динамический импорт, чтобы Vite не загружался на Vercel
-    // Это предотвращает ошибки с нативными модулями Rollup
     const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -111,7 +116,6 @@ async function startServer() {
     });
   }
 
-  // Запускаем прослушивание порта только если мы НЕ на Vercel
   if (!process.env.VERCEL) {
     app.listen(PORT, "0.0.0.0", () => {
       console.log(`Сервер запущен локально: http://localhost:${PORT}`);
@@ -121,10 +125,9 @@ async function startServer() {
   return app;
 }
 
-// Экспортируем промис с приложением для Vercel
 const appPromise = startServer();
 
 export default async (req: any, res: any) => {
   const app = await appPromise;
-  app(req, res); // Vercel сам передаст сюда запросы
+  app(req, res);
 };
