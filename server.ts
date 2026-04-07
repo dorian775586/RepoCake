@@ -2,7 +2,6 @@ import express from "express";
 import path from "path";
 import dotenv from "dotenv";
 import cors from "cors";
-import { createServer as createViteServer } from "vite";
 
 dotenv.config();
 
@@ -80,6 +79,9 @@ async function startServer() {
 
   // Интеграция Vite для разработки или обслуживание статики для продакшена
   if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
+    // Используем динамический импорт, чтобы Vite не загружался на Vercel
+    // Это предотвращает ошибки с нативными модулями Rollup
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
@@ -104,4 +106,9 @@ async function startServer() {
 }
 
 // Экспортируем промис с приложением для Vercel
-export default startServer();
+const appPromise = startServer();
+
+export default async (req: any, res: any) => {
+  const app = await appPromise;
+  app(req, res); // Vercel сам передаст сюда запросы
+};
