@@ -16,7 +16,10 @@ import {
   Star,
   Clock,
   Weight,
-  Instagram
+  Instagram,
+  Flame,
+  Store,
+  ExternalLink
 } from 'lucide-react';
 
 // --- Types ---
@@ -26,8 +29,9 @@ interface Cake {
   price: number;
   category: string;
   popularity: number;
-  desc: string;
-  image: string;
+  desc?: string;
+  image?: string;
+  calories?: string;
 }
 
 // СПИСОК АДМИНОВ (ID или Username)
@@ -47,74 +51,82 @@ const INITIAL_CAKES: Cake[] = [
   { 
     id: 1, 
     name: "Красный бархат", 
-    price: 35, 
+    price: 45, 
     category: "sponge", 
     popularity: 95, 
-    desc: "Классический десерт с ярко-красными бисквитами и нежнейшим крем-чизом. Идеальный баланс сладости и легкой кислинки.", 
-    image: "https://images.unsplash.com/photo-1616541823729-00fe0aacd32c?auto=format&fit=crop&w=800&q=80" 
+    desc: "Классический десерт с ярко-красными бисквитами и нежнейшим крем-чизом.", 
+    image: "https://images.unsplash.com/photo-1616541823729-00fe0aacd32c?auto=format&fit=crop&w=800&q=80",
+    calories: "320 ккал"
   },
   { 
     id: 2, 
     name: "Ягодный Мусс", 
-    price: 42, 
+    price: 50, 
     category: "mousse", 
     popularity: 88, 
-    desc: "Легкий мусс на основе натуральных лесных ягод с тонким слоем миндального бисквита. Освежающий и не приторный.", 
-    image: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=800&q=80" 
+    desc: "Легкий мусс на основе натуральных лесных ягод.", 
+    image: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=800&q=80",
+    calories: "210 ккал"
   },
   { 
     id: 3, 
     name: "Детский Космос", 
-    price: 55, 
+    price: 65, 
     category: "kids", 
     popularity: 100, 
-    desc: "Шоколадный взрыв с космическим декором. Внутри — три вида шоколада и хрустящие шарики. Мечта любого ребенка!", 
-    image: "https://images.unsplash.com/photo-1535141192574-5d4897c12636?auto=format&fit=crop&w=800&q=80" 
+    desc: "Шоколадный взрыв с космическим декором.", 
+    image: "https://images.unsplash.com/photo-1535141192574-5d4897c12636?auto=format&fit=crop&w=800&q=80",
+    calories: "380 ккал"
   },
   { 
     id: 4, 
     name: "Шоко-Трюфель", 
-    price: 48, 
+    price: 55, 
     category: "sponge", 
     popularity: 92, 
-    desc: "Насыщенный шоколадный вкус для истинных ценителей. Бельгийский шоколад и ганаш в каждом кусочке.", 
-    image: "https://images.unsplash.com/photo-1578985543812-0525828d51cd?auto=format&fit=crop&w=800&q=80" 
+    desc: "Насыщенный шоколадный вкус для истинных ценителей.", 
+    image: "https://images.unsplash.com/photo-1578985543812-0525828d51cd?auto=format&fit=crop&w=800&q=80",
+    calories: "410 ккал"
   },
   { 
     id: 5, 
     name: "Чизкейк Классик", 
-    price: 38, 
+    price: 40, 
     category: "mousse", 
     popularity: 85, 
-    desc: "Настоящий Нью-Йорк чизкейк на песочной основе. Плотный, сливочный и невероятно нежный.", 
-    image: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=800&q=80" 
+    desc: "Настоящий Нью-Йорк чизкейк на песочной основе.", 
+    image: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=800&q=80",
+    calories: "350 ккал"
   },
   { 
     id: 6, 
     name: "Морковный пряный", 
-    price: 36, 
+    price: 38, 
     category: "sponge", 
     popularity: 80, 
-    desc: "Ароматные коржи с корицей, грецким орехом и карамелью. Покрыт легким сметанным кремом.", 
-    image: "https://images.unsplash.com/photo-1536599485751-25e70d28864a?auto=format&fit=crop&w=800&q=80" 
+    desc: "Ароматные коржи с корицей и грецким орехом.", 
+    image: "https://images.unsplash.com/photo-1536599485751-25e70d28864a?auto=format&fit=crop&w=800&q=80",
+    calories: "290 ккал"
   },
   { 
     id: 7, 
     name: "Фисташка-Малина", 
-    price: 52, 
+    price: 60, 
     category: "mousse", 
     popularity: 94, 
-    desc: "Фисташковый мусс с малиновым конфитюром. Изысканное сочетание для гурманов.", 
-    image: "https://images.unsplash.com/photo-1519340333755-56e9c1d04579?auto=format&fit=crop&w=800&q=80" 
+    desc: "Фисташковый мусс с малиновым конфитюром.", 
+    image: "https://images.unsplash.com/photo-1519340333755-56e9c1d04579?auto=format&fit=crop&w=800&q=80",
+    calories: "310 ккал"
   },
   { 
     id: 8, 
     name: "Фруктовый Рай", 
-    price: 45, 
+    price: 48, 
     category: "kids", 
     popularity: 89, 
-    desc: "Легкий ванильный бисквит с обилием свежих сезонных фруктов и ягод. Минимум калорий, максимум вкуса.", 
-    image: "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=800&q=80" 
+    desc: "Легкий ванильный бисквит со свежими фруктами.", 
+    image: "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=800&q=80",
+    calories: "240 ккал"
   }
 ];
 
@@ -128,12 +140,13 @@ export default function App() {
   const [isOrderFormOpen, setIsOrderFormOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingCake, setEditingCake] = useState<Partial<Cake> | null>(null);
+  const [isAdminShopOpen, setIsAdminShopOpen] = useState(false);
 
   const tg = (window as any).Telegram?.WebApp;
 
   // Load data & Check Auth
   useEffect(() => {
-    const saved = localStorage.getItem('cakes_v4');
+    const saved = localStorage.getItem('cakes_v5');
     if (saved) {
       setCakes(JSON.parse(saved));
     } else {
@@ -156,7 +169,7 @@ export default function App() {
   // Save data
   useEffect(() => {
     if (cakes.length > 0) {
-      localStorage.setItem('cakes_v4', JSON.stringify(cakes));
+      localStorage.setItem('cakes_v5', JSON.stringify(cakes));
     }
   }, [cakes]);
 
@@ -177,8 +190,15 @@ export default function App() {
       setIsAdmin(!isAdmin);
       tg?.HapticFeedback.impactOccurred('medium');
     } else {
-      // Для обычных пользователей - переход в инсту
       window.open('https://instagram.com/your_account', '_blank');
+    }
+  };
+
+  const handleOpenExternal = () => {
+    if (tg) {
+      tg.openLink('https://repo-cake.vercel.app/');
+    } else {
+      window.open('https://repo-cake.vercel.app/', '_blank');
     }
   };
 
@@ -186,11 +206,20 @@ export default function App() {
     e.preventDefault();
     if (!editingCake) return;
 
+    const finalCake = {
+      ...editingCake,
+      id: editingCake.id || Date.now(),
+      popularity: editingCake.popularity || 50,
+      // Если строка пустая - удаляем поле
+      desc: editingCake.desc?.trim() || undefined,
+      image: editingCake.image?.trim() || undefined,
+      calories: editingCake.calories?.trim() || undefined,
+    } as Cake;
+
     if (editingCake.id) {
-      setCakes(prev => prev.map(c => c.id === editingCake.id ? (editingCake as Cake) : c));
+      setCakes(prev => prev.map(c => c.id === editingCake.id ? finalCake : c));
     } else {
-      const newCake = { ...editingCake, id: Date.now(), popularity: 50 } as Cake;
-      setCakes(prev => [...prev, newCake]);
+      setCakes(prev => [...prev, finalCake]);
     }
     setIsEditModalOpen(false);
     setEditingCake(null);
@@ -255,20 +284,29 @@ export default function App() {
       </AnimatePresence>
 
       {/* Catalog Page */}
-      <main className="pb-24">
+      <main className="pb-32">
         <header className="pt-10 pb-6 px-5 text-center relative">
-          <button 
-            onClick={handleToggleAdmin}
-            className="absolute top-4 left-5 bg-white/80 backdrop-blur-md p-2.5 rounded-xl text-[#AD1457] shadow-sm border border-pink-50 active:scale-90 transition-transform"
-          >
-            <Instagram className="w-5 h-5" />
-          </button>
+          <div className="absolute top-4 left-5 flex space-x-2">
+            <button 
+              onClick={handleToggleAdmin}
+              className="bg-white/80 backdrop-blur-md p-2.5 rounded-xl text-[#AD1457] shadow-sm border border-pink-50 active:scale-90 transition-transform"
+            >
+              <Instagram className="w-5 h-5" />
+            </button>
+            <button 
+              onClick={handleOpenExternal}
+              className="bg-white/80 backdrop-blur-md p-2.5 rounded-xl text-slate-400 shadow-sm border border-pink-50 active:scale-90 transition-transform"
+            >
+              <ExternalLink className="w-5 h-5" />
+            </button>
+          </div>
+
           <motion.h1 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="font-serif text-4xl text-[#AD1457] leading-tight"
+            className="font-serif text-4xl text-[#AD1457] leading-tight mt-12"
           >
-            Шедевры<br/><span className="text-slate-800">ручной работы</span>
+            Шедевры<br/><span className="text-slate-800 text-3xl">ручной работы</span>
           </motion.h1>
           <div className="w-10 h-1 bg-[#AD1457] mx-auto mt-4 rounded-full opacity-20" />
         </header>
@@ -315,14 +353,20 @@ export default function App() {
               className="group relative bg-white rounded-3xl overflow-hidden shadow-lg shadow-pink-100/10 border border-pink-50/30 flex flex-col"
             >
               <div 
-                className="relative h-44 overflow-hidden cursor-pointer"
+                className="relative h-44 overflow-hidden cursor-pointer bg-pink-50/30"
                 onClick={() => setSelectedCake(cake)}
               >
-                <img 
-                  src={cake.image} 
-                  alt={cake.name} 
-                  className="w-full h-full object-cover"
-                />
+                {cake.image ? (
+                  <img 
+                    src={cake.image} 
+                    alt={cake.name} 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-pink-200">
+                    <ShoppingBag className="w-12 h-12" />
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 <div className="absolute bottom-3 left-3 right-3 text-white">
                   <p className="bg-white/20 backdrop-blur-md px-1.5 py-0.5 rounded-full text-[7px] font-bold uppercase tracking-widest inline-block mb-1">
@@ -335,7 +379,7 @@ export default function App() {
               <div className="p-3 flex flex-col justify-between flex-grow">
                 <div className="mb-2">
                   <p className="text-lg font-bold text-[#AD1457]">
-                    {cake.price} <span className="text-[9px] font-normal text-slate-400 uppercase tracking-tighter">BYN/кг</span>
+                    {cake.price} <span className="text-[9px] font-normal text-slate-400 uppercase tracking-tighter">BYN</span>
                   </p>
                 </div>
                 <div className="flex space-x-1.5">
@@ -360,18 +404,76 @@ export default function App() {
         </div>
       </main>
 
-      {/* Admin Add Button */}
+      {/* Admin Bottom Bar */}
       <AnimatePresence>
         {isAdmin && (
-          <motion.button
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0 }}
-            onClick={() => { setEditingCake({ category: 'sponge' }); setIsEditModalOpen(true); }}
-            className="fixed bottom-6 right-6 z-50 bg-black text-white p-5 rounded-full shadow-2xl active:scale-90 transition-transform"
+          <motion.div 
+            initial={{ y: 100 }}
+            animate={{ y: 0 }}
+            exit={{ y: 100 }}
+            className="fixed bottom-0 left-0 right-0 bg-white border-t border-pink-50 p-4 z-[110] flex space-x-3 shadow-[0_-10px_30px_rgba(0,0,0,0.05)]"
           >
-            <Plus className="w-6 h-6" />
-          </motion.button>
+            <button 
+              onClick={() => setIsAdminShopOpen(true)}
+              className="flex-1 py-4 bg-black text-white rounded-2xl font-bold text-sm flex items-center justify-center space-x-2 active:scale-95 transition-transform"
+            >
+              <Store className="w-5 h-5" />
+              <span>Магазин</span>
+            </button>
+            <button 
+              onClick={() => { setEditingCake({ category: 'sponge' }); setIsEditModalOpen(true); }}
+              className="p-4 bg-brand-berry text-white rounded-2xl active:scale-95 transition-transform"
+            >
+              <Plus className="w-6 h-6" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Admin Shop Management Modal */}
+      <AnimatePresence>
+        {isAdminShopOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-[#FFFDF7] z-[150] p-6 overflow-y-auto"
+          >
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="font-serif text-3xl text-slate-800">Управление<br/><span className="text-[#AD1457]">магазином</span></h2>
+              <button 
+                onClick={() => setIsAdminShopOpen(false)}
+                className="p-3 bg-slate-50 rounded-full"
+              >
+                <X className="w-6 h-6 text-slate-300" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {cakes.map(cake => (
+                <button
+                  key={cake.id}
+                  onClick={() => { setEditingCake(cake); setIsEditModalOpen(true); }}
+                  className="w-full p-5 bg-white border border-pink-50 rounded-2xl flex items-center justify-between shadow-sm active:bg-pink-50/50 transition-colors"
+                >
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 rounded-xl bg-pink-50 overflow-hidden flex-shrink-0">
+                      {cake.image && <img src={cake.image} className="w-full h-full object-cover" />}
+                    </div>
+                    <div className="text-left">
+                      <p className="font-bold text-slate-800">{cake.name}</p>
+                      <p className="text-xs text-brand-berry font-bold">{cake.price} BYN</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-slate-300" />
+                </button>
+              ))}
+            </div>
+            
+            <div className="mt-10 text-center">
+              <p className="text-xs text-slate-400 italic">Нажмите на торт, чтобы изменить его или удалить</p>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
@@ -384,8 +486,8 @@ export default function App() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-white z-[120] overflow-y-auto"
           >
-            <div className="relative h-[45vh]">
-              <img src={selectedCake.image} className="w-full h-full object-cover" />
+            <div className="relative h-[45vh] bg-pink-50/30">
+              {selectedCake.image && <img src={selectedCake.image} className="w-full h-full object-cover" />}
               <button 
                 onClick={() => setSelectedCake(null)}
                 className="absolute top-6 left-5 bg-white/90 backdrop-blur-md p-3 rounded-full shadow-lg"
@@ -408,13 +510,15 @@ export default function App() {
                 </div>
                 <div className="text-right">
                   <p className="text-2xl font-bold text-[#AD1457]">{selectedCake.price}</p>
-                  <p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest">BYN/кг</p>
+                  <p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest text-right">BYN</p>
                 </div>
               </div>
 
-              <p className="text-slate-500 leading-relaxed text-base mb-8">
-                {selectedCake.desc}
-              </p>
+              {selectedCake.desc && (
+                <p className="text-slate-500 leading-relaxed text-base mb-8">
+                  {selectedCake.desc}
+                </p>
+              )}
 
               <div className="grid grid-cols-2 gap-4 mb-10">
                 <div className="bg-white border border-pink-50 p-4 rounded-3xl flex items-center space-x-3">
@@ -426,15 +530,17 @@ export default function App() {
                     <p className="text-xs font-bold">от 1.5 кг</p>
                   </div>
                 </div>
-                <div className="bg-white border border-pink-50 p-4 rounded-3xl flex items-center space-x-3">
-                  <div className="p-2 bg-pink-50 rounded-xl text-[#AD1457]">
-                    <Clock className="w-4 h-4" />
+                {selectedCake.calories && (
+                  <div className="bg-white border border-pink-50 p-4 rounded-3xl flex items-center space-x-3">
+                    <div className="p-2 bg-pink-50 rounded-xl text-[#AD1457]">
+                      <Flame className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-[8px] font-bold text-slate-400 uppercase">Энергия</p>
+                      <p className="text-xs font-bold">{selectedCake.calories}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[8px] font-bold text-slate-400 uppercase">Срок</p>
-                    <p className="text-xs font-bold">2-3 дня</p>
-                  </div>
-                </div>
+                )}
               </div>
 
               <button 
@@ -544,7 +650,7 @@ export default function App() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-[8px] font-bold text-slate-400 uppercase ml-3">Цена (BYN/кг)</label>
+                    <label className="text-[8px] font-bold text-slate-400 uppercase ml-3">Цена (BYN)</label>
                     <input 
                       type="number"
                       value={editingCake?.price || ''} 
@@ -566,21 +672,33 @@ export default function App() {
                     </select>
                   </div>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[8px] font-bold text-slate-400 uppercase ml-3">URL Фото</label>
-                  <input 
-                    value={editingCake?.image || ''} 
-                    onChange={e => setEditingCake(prev => ({ ...prev!, image: e.target.value }))}
-                    required 
-                    className="w-full p-3.5 rounded-xl border border-pink-50 bg-slate-50 focus:outline-none text-sm" 
-                  />
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-[8px] font-bold text-slate-400 uppercase ml-3">URL Фото (опц.)</label>
+                    <input 
+                      value={editingCake?.image || ''} 
+                      onChange={e => setEditingCake(prev => ({ ...prev!, image: e.target.value }))}
+                      placeholder="Пусто = без фото"
+                      className="w-full p-3.5 rounded-xl border border-pink-50 bg-slate-50 focus:outline-none text-sm" 
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[8px] font-bold text-slate-400 uppercase ml-3">Калории (опц.)</label>
+                    <input 
+                      value={editingCake?.calories || ''} 
+                      onChange={e => setEditingCake(prev => ({ ...prev!, calories: e.target.value }))}
+                      placeholder="Напр: 300 ккал"
+                      className="w-full p-3.5 rounded-xl border border-pink-50 bg-slate-50 focus:outline-none text-sm" 
+                    />
+                  </div>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[8px] font-bold text-slate-400 uppercase ml-3">Описание</label>
+                  <label className="text-[8px] font-bold text-slate-400 uppercase ml-3">Описание (опц.)</label>
                   <textarea 
                     value={editingCake?.desc || ''} 
                     onChange={e => setEditingCake(prev => ({ ...prev!, desc: e.target.value }))}
                     rows={3} 
+                    placeholder="Пусто = без описания"
                     className="w-full p-3.5 rounded-xl border border-pink-50 bg-slate-50 focus:outline-none text-sm" 
                   />
                 </div>
