@@ -36,21 +36,31 @@ async function startServer() {
       return res.status(401).json({ error: "Вы используете СТАРЫЙ отозванный токен. Обновите TELEGRAM_BOT_TOKEN в настройках!" });
     }
 
+    const escapeHtml = (text: string) => {
+      if (!text) return '-';
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    };
+
     // Формируем сообщение, используя данные напрямую
     const message = `
-🎂 *НОВЫЙ ЗАКАЗ!*
+<b>🎂 НОВЫЙ ЗАКАЗ!</b>
 --------------------------
-🍰 *Торт:* ${data.cake || 'Не выбран'}
-⚖️ *Размер:* ${data.size || '-'}
-🍓 *Начинка:* ${data.filling || '-'}
-🍞 *Бисквит:* ${data.biscuit || '-'}
-🥜 *Добавки:* ${data.addon || '-'}
-💰 *Цена:* ${data.price || 0} BYN
-👤 *Клиент:* ${data.customer || data.name || 'Не указан'}
-📞 *Телефон:* ${data.phone || 'Не указан'}
-📅 *Дата:* ${data.date || '-'}
-⏰ *Время:* ${data.time || '-'}
-📝 *Пожелания:* ${data.wishes || '-'}
+🍰 <b>Торт:</b> ${escapeHtml(data.cake)}
+⚖️ <b>Размер:</b> ${escapeHtml(data.size)}
+🍓 <b>Начинка:</b> ${escapeHtml(data.filling)}
+🍞 <b>Бисквит:</b> ${escapeHtml(data.biscuit)}
+🥜 <b>Добавки:</b> ${escapeHtml(data.addon)}
+💰 <b>Цена:</b> ${data.price || 0} BYN
+👤 <b>Клиент:</b> ${escapeHtml(data.customer || data.name)}
+📞 <b>Телефон:</b> ${escapeHtml(data.phone)}
+📅 <b>Дата:</b> ${escapeHtml(data.date)}
+⏰ <b>Время:</b> ${escapeHtml(data.time)}
+📝 <b>Пожелания:</b> ${escapeHtml(data.wishes)}
 --------------------------`.trim();
 
     try {
@@ -60,7 +70,7 @@ async function startServer() {
         body: JSON.stringify({
           chat_id: adminChatId,
           text: message,
-          parse_mode: "Markdown",
+          parse_mode: "HTML",
         }),
       });
 
@@ -73,7 +83,7 @@ async function startServer() {
       // Отправляем подтверждение пользователю, если есть chatId
       if (data.chatId) {
         const userMessage = `
-✨ *Ваш заказ принят!*
+✨ <b>Ваш заказ принят!</b>
 
 Спасибо за доверие! Мы уже передали детали нашим кондитерам 👩‍🍳👨‍🍳
 
@@ -88,12 +98,11 @@ async function startServer() {
             body: JSON.stringify({
               chat_id: data.chatId,
               text: userMessage,
-              parse_mode: "Markdown",
+              parse_mode: "HTML",
             }),
           });
         } catch (err) {
           console.error("Ошибка при отправке сообщения пользователю:", err);
-          // Не прерываем основной процесс, если не удалось отправить сообщение пользователю
         }
       }
 
