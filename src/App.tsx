@@ -871,15 +871,10 @@ export default function App() {
                 </motion.div>
               ))}
 
-              <div className="w-40 h-40 mx-auto mb-6 rounded-full overflow-hidden border-8 border-rose-50 shadow-xl relative z-10">
-                <img 
-                  src="https://images.unsplash.com/photo-1533733356397-8627e193aa4b?auto=format&fit=crop&w=400&q=80" 
-                  alt="Super Cute Cat" 
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
+              <div className="w-40 h-40 mx-auto mb-6 rounded-full bg-rose-50 flex items-center justify-center border-8 border-rose-100 shadow-xl relative z-10">
+                <span className="text-7xl">🫶🏻</span>
               </div>
-              <h2 className="font-serif text-3xl text-[#D81B60] mb-4">Мяу! Заказ принят!</h2>
+              <h2 className="font-serif text-3xl text-[#D81B60] mb-4">Заказ принят!</h2>
               <p className="text-slate-500 mb-8 leading-relaxed text-sm">
                 Ваш заказ уже в пути к нашему кондитеру. Мы свяжемся с вами совсем скоро! ✨
               </p>
