@@ -730,13 +730,13 @@ export default function App() {
           >
             <button 
               onClick={() => setIsOrderFormOpen(false)}
-              className="mb-6 text-[#AD1457] font-bold flex items-center bg-pink-50 px-4 py-2 rounded-xl text-sm"
+              className="mb-6 text-[#F06292] font-bold flex items-center bg-rose-50 px-4 py-2 rounded-xl text-sm"
             >
               <ChevronLeft className="w-4 h-4 mr-1" />
               Назад
             </button>
             
-            <h2 className="font-serif text-3xl text-[#AD1457] mb-8">Оформление<br/><span className="text-slate-800 text-2xl">заказа</span></h2>
+            <h2 className="font-serif text-2xl text-slate-800 mb-8 tracking-tight">Оформление заказа</h2>
             
             <form onSubmit={handleOrderSubmit} className="space-y-6">
               <div className="space-y-1">
@@ -841,8 +841,8 @@ export default function App() {
 
               <div className="w-40 h-40 mx-auto mb-6 rounded-full overflow-hidden border-8 border-rose-50 shadow-xl relative z-10">
                 <img 
-                  src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=400&q=80" 
-                  alt="Cute Cat Chef" 
+                  src="https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=400&q=80" 
+                  alt="Super Cute Cat" 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                 />
