@@ -841,8 +841,8 @@ export default function App() {
 
               <div className="w-40 h-40 mx-auto mb-6 rounded-full overflow-hidden border-8 border-rose-50 shadow-xl relative z-10">
                 <img 
-                  src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=400&q=80" 
-                  alt="Cute Cat" 
+                  src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=400&q=80" 
+                  alt="Cute Cat Chef" 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                 />
