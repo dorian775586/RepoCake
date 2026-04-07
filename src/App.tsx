@@ -254,14 +254,14 @@ export default function App() {
     }
     
     try {
+      // Используем относительный путь - это самый надежный вариант для fetch
       const apiUrl = '/api/order';
-      console.log("Sending order to:", apiUrl);
+      console.log("Sending order to:", apiUrl, orderData);
 
       const res = await fetch(apiUrl, {
         method: 'POST',
         headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ orderData })
       });

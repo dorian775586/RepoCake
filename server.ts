@@ -22,6 +22,15 @@ async function startServer() {
     const token = process.env.TELEGRAM_BOT_TOKEN;
     const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
 
+    if (!orderData) {
+      return res.status(400).json({ error: "Данные заказа отсутствуют" });
+    }
+
+    if (!token || !adminChatId) {
+      console.error("Missing Telegram configuration:", { token: !!token, adminChatId: !!adminChatId });
+      return res.status(500).json({ error: "Настройки бота не завершены (токен или ID админа)" });
+    }
+
     const message = `
 🎂 *НОВЫЙ ЗАКАЗ!*
 --------------------------
@@ -32,7 +41,7 @@ async function startServer() {
 --------------------------`;
 
     try {
-      await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -41,6 +50,13 @@ async function startServer() {
           parse_mode: "Markdown",
         }),
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Telegram API error:", errorText);
+        return res.status(500).json({ error: `Telegram API error: ${response.status}` });
+      }
+
       res.json({ success: true });
     } catch (error) {
       console.error("Order error:", error);
