@@ -91,34 +91,70 @@ async function startServer() {
     console.log(`Сервер запущен: http://localhost:${PORT}`);
   });
 
-  // Эндпоинт для вебхука Telegram (вместо Polling)
+  // Эндпоинт для вебхука Telegram (для Vercel)
   app.post("/api/webhook", async (req, res) => {
     const token = process.env.TELEGRAM_BOT_TOKEN;
     const appUrl = process.env.APP_URL || "https://repo-cake.vercel.app/";
     const update = req.body;
 
     if (update.message && update.message.text === "/start") {
-      const chatId = update.message.chat.id;
-      try {
-        await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            chat_id: chatId,
-            text: "Добро пожаловать в нашу кондитерскую! Нажмите кнопку ниже, чтобы открыть магазин:",
-            reply_markup: {
-              inline_keyboard: [[
-                { text: "Магазин 🍰", web_app: { url: appUrl } }
-              ]]
-            }
-          }),
-        });
-      } catch (err) {
-        console.error("Webhook error:", err);
-      }
+      await sendStartMessage(token, update.message.chat.id, appUrl);
     }
     res.sendStatus(200);
   });
+
+  // Запускаем Polling только если мы НЕ на Vercel
+  if (!process.env.VERCEL) {
+    startBotPolling();
+  }
+}
+
+async function sendStartMessage(token: string | undefined, chatId: number, appUrl: string) {
+  if (!token) return;
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: "Добро пожаловать в нашу кондитерскую! Нажмите кнопку ниже, чтобы открыть магазин:",
+        reply_markup: {
+          inline_keyboard: [[
+            { text: "Магазин 🍰", web_app: { url: appUrl } }
+          ]]
+        }
+      }),
+    });
+  } catch (err) {
+    console.error("Error sending message:", err);
+  }
+}
+
+async function startBotPolling() {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const appUrl = process.env.APP_URL || "https://repo-cake.vercel.app/";
+  if (!token) return;
+
+  console.log("Запущен Polling для бота...");
+  let lastUpdateId = 0;
+
+  setInterval(async () => {
+    try {
+      const response = await fetch(`https://api.telegram.org/bot${token}/getUpdates?offset=${lastUpdateId + 1}&timeout=10`);
+      const data = await response.json();
+
+      if (data.ok && data.result.length > 0) {
+        for (const update of data.result) {
+          lastUpdateId = update.update_id;
+          if (update.message && update.message.text === "/start") {
+            await sendStartMessage(token, update.message.chat.id, appUrl);
+          }
+        }
+      }
+    } catch (e) {
+      // Игнорируем ошибки сети
+    }
+  }, 3000);
 }
 
 startServer();
