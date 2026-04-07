@@ -747,6 +747,14 @@ export default function App() {
                 <label className="text-[10px] font-bold text-slate-400 uppercase ml-4 tracking-widest">Телефон</label>
                 <input name="phone" type="tel" placeholder="+375" required className="w-full p-4.5 rounded-2xl border border-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-200 bg-white shadow-sm text-sm transition-all" />
               </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase ml-4 tracking-widest">Способ получения</label>
+                <div className="w-full p-4.5 rounded-2xl border border-rose-50 bg-rose-50/30 shadow-sm text-sm">
+                  <p className="font-bold text-[#D81B60]">Самовывоз по адресу:</p>
+                  <p className="text-slate-600">Улица Сладкая, 15</p>
+                </div>
+              </div>
               
               <div className="space-y-4">
                 <div className="relative group">
@@ -833,7 +841,7 @@ export default function App() {
 
               <div className="w-40 h-40 mx-auto mb-6 rounded-full overflow-hidden border-8 border-rose-50 shadow-xl relative z-10">
                 <img 
-                  src="https://images.unsplash.com/photo-1573865668131-974279243a56?auto=format&fit=crop&w=400&q=80" 
+                  src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=400&q=80" 
                   alt="Cute Cat" 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
