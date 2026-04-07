@@ -3,6 +3,7 @@ import { createServer as createViteServer } from "vite";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
+import cors from "cors";
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ async function startServer() {
   const PORT = 3000;
 
   app.use(express.json());
+  app.use(cors());
 
   // API: Обработка заказа
   app.post("/api/order", async (req, res) => {
@@ -112,7 +114,7 @@ async function startBotPolling() {
                 text: "Добро пожаловать в нашу кондитерскую! Нажмите кнопку ниже, чтобы открыть магазин:",
                 reply_markup: {
                   inline_keyboard: [[
-                    { text: "Магазин 🍰", web_app: { url: appUrl || "https://repo-cake.vercel.app/" } }
+                    { text: "Магазин 🍰", web_app: { url: "https://repo-cake.vercel.app/" } }
                   ]]
                 }
               }),

@@ -254,9 +254,12 @@ export default function App() {
     }
     
     try {
-      // Используем относительный путь, если мы на том же домене, 
-      // или пытаемся достучаться до API текущего сервера
-      const res = await fetch('/api/order', {
+      // Если мы на Vercel, отправляем запрос на этот сервер AI Studio
+      const apiUrl = window.location.hostname.includes('vercel.app') 
+        ? 'https://ais-dev-m6ibgf6cp6gvlgbqvlmtgb-88698830637.europe-west2.run.app/api/order'
+        : '/api/order';
+
+      const res = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderData })
